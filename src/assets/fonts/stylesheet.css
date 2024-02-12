@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'GarciaMarquez';
+    src: url('GarciaMarquez.eot');
+    src: local('GarciaMarquez'),
+        url('GarciaMarquez.eot?#iefix') format('embedded-opentype'),
+        url('GarciaMarquez.woff2') format('woff2'),
+        url('GarciaMarquez.woff') format('woff'),
+        url('GarciaMarquez.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
