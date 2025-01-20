@@ -1,34 +1,32 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import headBg from "../../../assets/img/headBg.png";
 import headBgMobile from "../../../assets/img/headBgMobile.png";
-import cloud from "../../assets/img/cloud.png";
 import { theme } from '../../../core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
     position: "relative",
     height: "112vh",
-    backgroundImage: `url("${headBg}")`,
+    backgroundImage: `url(${headBg})`,
     backgroundPosition: "center",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     [theme.breakpoints.down('sm')]: {
       height: "90vh",
-      backgroundImage: `url("${headBgMobile}")`,
+      backgroundImage: `url(${headBgMobile})`,
     },
   },
   content: {
-    width: "100%",
-    height: "100%",
-    py: '100px',
+    width: 1,
+    height: 1,
+    py: 10,
     [theme.breakpoints.down('sm')]: {
-      py: '20px',
+      py: 2,
     },
   },
   gridContainer: {
-    height: "inherit",
-    direction: "column",
-    alignItems: "space-between",
+    height: 1,
+    flexDirection: "column",
     justifyContent: "space-between",
     [theme.breakpoints.down('lg')]: {
       maxHeight: "80vh",
@@ -38,7 +36,7 @@ const styles: Record<string, SxProps<Theme>> = {
     },
   },
   title: {
-    mt: '40px',
+    mt: 4,
     maxWidth: '890px',
     [theme.breakpoints.down('sm')]: {
       maxWidth: '170px',

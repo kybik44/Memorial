@@ -7,7 +7,6 @@ import GearIcon from "../icons/GearIcon";
 import GeoIcon from "../icons/GeoIcon";
 import ShieldIcon from "../icons/ShieldIcon";
 import SmartPhoneIcon from "../icons/SmartPhoneIcon";
-import { CardListItem } from "/components/molecules/catalog-list/CatalogList";
 
 //Временные данные, ждем апи, конечный вид объектов не известен
 
@@ -39,6 +38,12 @@ export const decorItems = [
   {
     id: 5,
     title: "Декор бронза",
+    link: "/catalog/bronze-decor",
+    image: "/src/assets/img/d (4).png",
+  },
+  {
+    id: 6,
+    title: "Декор бронза1",
     link: "/catalog/bronze-decor",
     image: "/src/assets/img/d (4).png",
   },
@@ -126,87 +131,30 @@ export const graniteItems = [
   {
     title: "Аврора Индиан",
     image: "/src/assets/img/c1.png",
+    description: 'Аврора Индиан',
   },
   {
     title: "Габро-Диабаз (Карелия)",
     image: "/src/assets/img/c2.png",
+    description: 'Аврора Индиан',
   },
   {
     title: "Аврора",
     image: "/src/assets/img/c3.png",
+    description: 'Аврора Индиан',
   },
   {
     title: "Аврора Индиан",
     image: "/src/assets/img/c1.png",
+    description: 'Аврора Индиан',
   },
   {
     title: "Габро-Диабаз (Карелия)",
     image: "/src/assets/img/c2.png",
+    description: 'Аврора Индиан',
   },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
-  {
-    title: "Аврора Индиан",
-    image: "/src/assets/img/c1.png",
-  },
-  {
-    title: "Габро-Диабаз (Карелия)",
-    image: "/src/assets/img/c2.png",
-  },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
-  {
-    title: "Аврора Индиан",
-    image: "/src/assets/img/c1.png",
-  },
-  {
-    title: "Габро-Диабаз (Карелия)",
-    image: "/src/assets/img/c2.png",
-  },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
-  {
-    title: "Аврора Индиан",
-    image: "/src/assets/img/c1.png",
-  },
-  {
-    title: "Габро-Диабаз (Карелия)",
-    image: "/src/assets/img/c2.png",
-  },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
-  {
-    title: "Аврора Индиан",
-    image: "/src/assets/img/c1.png",
-  },
-  {
-    title: "Габро-Диабаз (Карелия)",
-    image: "/src/assets/img/c2.png",
-  },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
-  {
-    title: "Аврора Индиан",
-    image: "/src/assets/img/c1.png",
-  },
-  {
-    title: "Габро-Диабаз (Карелия)",
-    image: "/src/assets/img/c2.png",
-  },
-  {
-    title: "Аврора",
-    image: "/src/assets/img/c3.png",
-  },
+
+  
 ];
 
 export const kindsItems = [
@@ -269,59 +217,117 @@ export const getAdvantagesInfo = (
     icon: <GeoIcon className={isSmallScreen && iconProperties} />,
   },
 ];
+export const catalogItems = {
+  glassMemorials: [
+    {
+      id: 1,
+      title: "Памятник 1",
+      image: "/src/assets/img/p (1).png",
+      price: 678,
+    },
+    {
+      id: 2,
+      title: "Двойные памятники",
+      image: "/src/assets/img/p (2).png",
+      price: 123,
+    },
+    {
+      id: 3,
+      title: "Памятники в виде креста",
+      image: "/src/assets/img/p (3).png",
+      price: 5748,
+    },
+    {
+      id: 4,
+      title: "Колумбарии1",
+      image: "/src/assets/img/p (4).png",
+      price: 63467,
+    },
+    {
+      id: 5,
+      title: "Одиночные памятники",
+      image: "/src/assets/img/p (5).png",
+      price: 52356,
+    },
+    {
+      id: 6,
+      title: "Двойные памятники",
+      image: "/src/assets/img/p (6).png",
+      price: 124,
+    },
+    {
+      id: 7,
+      title: "Памятники в виде креста1",
+      image: "/src/assets/img/p (7).png",
+      price: 12567,
+    },
+    {
+      id: 8,
+      title: "Колумбарии2",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+    {
+      id: 9,
+      title: "Памятники в виде креста2",
+      image: "/src/assets/img/p (7).png",
+      price: 12567,
+    },
+    {
+      id: 10,
+      title: "Колумбарии3",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+  ],
+  singleMemorials: [
+    {
+      id: 1,
+      title: "asfasf",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+    {
+      id: 2,
+      title: "fasfasf в виде креста2",
+      image: "/src/assets/img/p (7).png",
+      price: 12567,
+    },
+    {
+      id: 3,
+      title: "affs",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+    {
+      id: 4,
+      title: "asfasf",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
 
-export const catalogItems: Array<CardListItem> = [
-  {
-    title: "Памятник 1",
-    image: "/src/assets/img/p (1).png",
-    price: 678,
-  },
-  {
-    title: "Двойные памятники",
-    image: "/src/assets/img/p (2).png",
-    price: 123,
-  },
-  {
-    title: "Памятники в виде креста",
-    image: "/src/assets/img/p (3).png",
-    price: 5748,
-  },
-  {
-    title: "Колумбарии1",
-    image: "/src/assets/img/p (4).png",
-    price: 63467,
-  },
-  {
-    title: "Одиночные памятники",
-    image: "/src/assets/img/p (5).png",
-    price: 52356,
-  },
-  {
-    title: "Двойные памятники",
-    image: "/src/assets/img/p (6).png",
-    price: 124,
-  },
-  {
-    title: "Памятники в виде креста1",
-    image: "/src/assets/img/p (7).png",
-    price: 12567,
-  },
-  {
-    title: "Колумбарии2",
-    image: "/src/assets/img/p (8).png",
-    price: 166,
-  },
-  {
-    title: "Памятники в виде креста2",
-    image: "/src/assets/img/p (7).png",
-    price: 12567,
-  },
-  {
-    title: "Колумбарии3",
-    image: "/src/assets/img/p (8).png",
-    price: 166,
-  },
-];
+  ],
+  singleFences: [
+    {
+      id: 1,
+      title: "asfasf",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+    {
+      id: 2,
+      title: "fasfasf в виде креста2",
+      image: "/src/assets/img/p (7).png",
+      price: 12567,
+    },
+    {
+      id: 3,
+      title: "affs",
+      image: "/src/assets/img/p (8).png",
+      price: 166,
+    },
+  ],
+};
 
 export const catalogItemColors = [
   {

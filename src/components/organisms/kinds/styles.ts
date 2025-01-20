@@ -1,4 +1,4 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import kindsBg from "../../../assets/img/kindsBg.png";
 import kindsBgMobile from "../../../assets/img/kindsBgMobile.png";
 import { theme } from '../../../core/theme';
@@ -6,34 +6,32 @@ import { theme } from '../../../core/theme';
 const styles: Record<string, SxProps<Theme>> = {
   container: {
     position: "relative",
-    width: "100%",
-    height: "100%",
-    backgroundImage: `url("${kindsBg}")`,
+    width: 1,
+    height: 1,
+    backgroundImage: `url(${kindsBg})`,
     backgroundPosition: "top",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     [theme.breakpoints.down('md')]: {
-      backgroundImage: `url("${kindsBgMobile}")`,
-      // backgroundSize: "contain",
+      backgroundImage: `url(${kindsBgMobile})`,
     },
   },
   content: {
     textAlign: "center",
-    py: '200px',
+    py: 20,
     [theme.breakpoints.down('md')]: {
-      py: '140px',
+      py: 14,
     },
     [theme.breakpoints.down('sm')]: {
-      pt: '65px',
-      pb: '40px',
+      pt: 6.5,
+      pb: 4,
     },
   },
   title: {
-    mb: "80px",
+    mb: [2.5, 6, 10],
     [theme.breakpoints.down('sm')]: {
-      mb: "20px",
       textAlign: "right",
-      letterSpacing: '-0.34px'
+      letterSpacing: '-0.34px',
     },
   },
   gridContainer: {
@@ -41,22 +39,22 @@ const styles: Record<string, SxProps<Theme>> = {
     alignItems: "stretch",
   },
   card: {
-    height: "100%",
+    height: 1,
     maxHeight: "550px",
     maxWidth: "350px",
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexDirection: 'column',
-    p: '25px 15px 35px 15px',
+    p: 2.5,
     border: '4px solid #6E8061',
     borderRadius: '10px',
     backgroundColor: '#fff',
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      p: '5px 20px',
-      maxWidth: "100%",
+      p: 1,
+      maxWidth: 1,
       border: '1px solid #6E8061',
       borderRadius: '2px',
     },
@@ -76,25 +74,25 @@ const styles: Record<string, SxProps<Theme>> = {
   cardInfo: {
     display: 'flex',
     flexDirection: 'column',
-    width: '100%',
+    width: 1,
     [theme.breakpoints.down('sm')]: {
       width: '160px',
       alignItems: 'flex-start',
       '& .MuiCardContent-root': {
         textAlign: 'left',
-        width: '100%',
+        width: 1,
         maxWidth: '160px',
         px: 0,
       },
       '& .MuiCardActions-root': {
         px: 0,
-        width: '100%',
-      }
+        width: 1,
+      },
     },
   },
   button: {
-    width: '100%'
-  }
+    width: 1,
+  },
 };
 
 export default styles;

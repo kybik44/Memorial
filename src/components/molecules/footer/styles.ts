@@ -1,4 +1,4 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import { theme } from '../../../core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
@@ -8,12 +8,12 @@ const styles: Record<string, SxProps<Theme>> = {
   content: {
     display: 'flex',
     justifyContent: 'space-between',
-    py: "100px",
+    py: 12.5,
     [theme.breakpoints.down('md')]: {
-      py: '50px',
+      py: 6.25,
     },
     [theme.breakpoints.down('sm')]: {
-      p: '40px 40px 20px 40px',
+      p: 5,
       flexDirection: 'column',
       alignItems: 'center',
     },
@@ -21,17 +21,17 @@ const styles: Record<string, SxProps<Theme>> = {
   logoContainer: {
     justifyContent: 'space-between',
     mr: 3,
-    width: '100%',
+    width: 1,
     maxWidth: '350px',
     [theme.breakpoints.up('md')]: {
       maxWidth: '250px',
     },
     [theme.breakpoints.down('sm')]: {
       alignItems: 'center',
-      maxWidth: '100%x',
+      maxWidth: 1,
       mr: 0,
-      mb: '40px'
-    }
+      mb: 5,
+    },
   },
   logo: {
     maxWidth: '92px',
@@ -42,15 +42,14 @@ const styles: Record<string, SxProps<Theme>> = {
     },
   },
   columns: {
-    width: '100%',
+    width: 1,
     display: 'flex',
     justifyContent: 'space-between',
     [theme.breakpoints.down('sm')]: {
-      display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
-    }
+    },
   },
   text: {
     [theme.breakpoints.down('sm')]: {
@@ -62,24 +61,24 @@ const styles: Record<string, SxProps<Theme>> = {
     fontSize: '10px',
     fontWeight: 500,
     lineHeight: '10px',
-    maxWidth: '235px'
+    maxWidth: '235px',
   },
   links: {
     maxWidth: '175px',
     mr: 3,
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '100%',
+      maxWidth: 1,
       mr: 0,
-      mb: '75px'
+      mb: 9.375,
     },
   },
   infos: {
     maxWidth: '400px',
     mr: 3,
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '100%',
+      maxWidth: 1,
       mr: 0,
-      mb: '70px'
+      mb: 8.75,
     },
   },
   infoLink: {
@@ -89,14 +88,14 @@ const styles: Record<string, SxProps<Theme>> = {
   time: {
     maxWidth: '225px',
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '100%'
+      maxWidth: 1,
     },
   },
   timeItem: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-  }
+  },
 };
 
 export default styles;

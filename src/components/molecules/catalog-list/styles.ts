@@ -1,46 +1,57 @@
-import { Theme, SxProps } from '@mui/material/styles';
-import kindsBg from "../../assets/img/kindsBg.png";
-import kindsBgMobile from "../../assets/img/kindsBgMobile.png";
+import { SxProps, Theme } from '@mui/material/styles';
 import { theme } from '../../../core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
   gridContainer: {
+    width: 1,
     display: "flex",
     alignItems: "stretch",
-    p: '50px'
+    p: 5,
+    [theme.breakpoints.down('md')]: {
+      p: 3,
+    },
+    [theme.breakpoints.up('xl')]: {
+      '& .MuiGrid-rowSpacing': {
+        margin: '-8px',
+      },
+    }
   },
   card: {
-    height: "100%",
+    height: 1,
     maxHeight: "500px",
-    maxWidth: "350px",
+    width: 1,
+    maxWidth: 1,
     display: 'flex',
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexDirection: 'column',
-    p: '20px 15px',
-    border: '4px solid #6E8061',
-    borderRadius: '10px',
+    p: 2.5,
+    borderRadius: 2.5,
     backgroundColor: '#fff',
+    boxShadow: '0px 2px 8px rgba(0, 0, 0, 0.25)',
+    gap: 2,
     [theme.breakpoints.down('sm')]: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      p: '5px 20px',
-      maxWidth: "100%",
-      border: '1px solid #6E8061',
-      borderRadius: '2px',
+      gap: 1,
+      p: 1.5,
+      minHeight: "260px",
     },
   },
   image: {
     maxHeight: '280px',
     m: 'auto 0',
+    objectFit: 'contain',
     [theme.breakpoints.down('sm')]: {
-      objectFit: 'contain',
-      width: '120px',
-      height: '120px',
+      maxHeight: '160px',
     },
   },
   cardTitle: {
-    my: '16px',
+    textAlign: 'center',
+    [theme.breakpoints.down('sm')]: {
+
+    }
+  },
+  price: {
+    fontWeight: '700',
   },
   cardContent: {
     p: 0,
@@ -49,23 +60,39 @@ const styles: Record<string, SxProps<Theme>> = {
   cardInfo: {
     display: 'flex',
     flexDirection: 'column',
+    alignItems: 'center',
     [theme.breakpoints.down('sm')]: {
       width: '160px',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       '& .MuiCardContent-root': {
-        textAlign: 'left',
-        width: '100%',
+        width: 1,
         maxWidth: '160px',
         px: 0,
       },
       '& .MuiCardActions-root': {
-        px: 0,
-        width: '100%',
+        justifyContent: 'center',
+        p: 0,
+        width: 1,
       }
     },
   },
   button: {
-    width: '100%'
+    maxWidth: '170px',
+    mt: 1,
+    [theme.breakpoints.down('sm')]: {
+      maxWidth: '84px',
+      p: '10px 8px',
+    },
+    '& > a': {
+      textDecoration: 'none',
+      fontSize: '15px',
+      fontWeight: '600',
+      color: 'text.secondary',
+      [theme.breakpoints.down('sm')]: {
+        fontSize: '10px',
+        lineHeight: '10px',
+      }
+    }
   }
 };
 

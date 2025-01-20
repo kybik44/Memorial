@@ -1,4 +1,4 @@
-import { Theme, createTheme, responsiveFontSizes } from '@mui/material/styles';
+import { Theme, createTheme } from '@mui/material/styles';
 
 declare module '@mui/material/styles' {
   interface DefaultTheme extends Theme { }
@@ -10,7 +10,7 @@ export const theme = createTheme({
       xs: 0,
       sm: 600,
       md: 960,
-      lg: 1440,
+      lg: 1280,
       xl: 1784,
     },
   },
@@ -24,7 +24,7 @@ export const theme = createTheme({
       secondary: "#FFFFFF"
     },
     background: {
-      paper: '#F9F9F9',
+      paper: '#FFFFFF',
       default: '#FFFFFF',
     },
   },
@@ -32,64 +32,64 @@ export const theme = createTheme({
     h1: {
       fontFamily: "GarciaMarquez",
       fontSize: "80px",
-      fontWeight: 400,
-      lineHeight: "80px",
+      fontWeight: 500,
+      lineHeight: "100%",
       letterSpacing: "-0.017em",
     },
     h2: {
       fontFamily: "GarciaMarquez",
       fontSize: "60px",
-      fontWeight: 400,
-      lineHeight: "60px",
+      fontWeight: 500,
+      lineHeight: "100%",
       letterSpacing: "-0.017em",
     },
     h3: {
       fontFamily: "GarciaMarquez",
       fontSize: "40px",
-      fontWeight: 400,
-      lineHeight: "40px",
+      fontWeight: 500,
+      lineHeight: "100%",
     },
     h4: {
       fontFamily: "Montserrat",
-      fontSize: "20px",
+      fontSize: "19px",
       fontWeight: 600,
-      lineHeight: "20px",
+      lineHeight: "100%",
     },
     h5: {
       fontFamily: "Montserrat",
-      fontSize: "20px",
+      fontSize: "19px",
       fontWeight: 500,
-      lineHeight: "20px",
+      lineHeight: "100%",
     },
     h6: {
       fontFamily: "Montserrat",
       fontSize: "25px",
       fontWeight: 500,
-      lineHeight: "25px",
+      lineHeight: "100%",
     },
     subtitle1: {
       fontFamily: "GarciaMarquez",
       fontSize: '50px',
       fontWeight: 400,
-      lineHeight: '50px',
+      lineHeight: "100%",
     },
     subtitle2: {
       fontFamily: "Montserrat",
       fontSize: "25px",
       fontWeight: 600,
-      lineHeight: "25px",
+      lineHeight: "100%",
     },
     body1: {
       fontFamily: "Montserrat",
       fontSize: "15px",
       fontWeight: 500,
-      lineHeight: "15px",
+      lineHeight: "100%",
     },
     body2: {
       fontFamily: "Montserrat",
       fontSize: "25px",
       fontWeight: 400,
-      lineHeight: "25px",
+      lineHeight: "130%",
     }
   },
   components: {
@@ -127,5 +127,23 @@ export const theme = createTheme({
         },
       },
     },
-  }
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          textDecoration: 'none',
+          '&:hover': {
+            textDecoration: 'underline'
+          },
+        }
+      }
+    },
+    MuiCollapse: {
+      styleOverrides: {
+        root: {
+          // height: "10%",
+        }
+      }
+    },
+  },
+
 });

@@ -1,6 +1,7 @@
-import type { YMapLocationRequest } from 'ymaps3';
+import { YMapLocationRequest, YMap, YMapDefaultSchemeLayer } from 'ymaps3';
 
 export async function initMap(): Promise<void> {
+    try {
     await ymaps3.ready;
 
     const LOCATION: YMapLocationRequest = {
@@ -8,9 +9,15 @@ export async function initMap(): Promise<void> {
         zoom: 15
     };
 
-    const { YMap, YMapDefaultSchemeLayer } = ymaps3;
-
-    const map = new YMap(document.getElementById('map'), { location: LOCATION });
-    map.addChild(new YMapDefaultSchemeLayer({}));
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
+            console.error('Could not find the map element on the page.');
+            return;
 }
 
+        const map = new YMap(mapElement, { location: LOCATION });
+        map.addChild(new YMapDefaultSchemeLayer({}));
+    } catch (error) {
+        console.error('An error occurred while initializing the map:', error);
+    }
+}

@@ -1,80 +1,61 @@
 import { SxProps, Theme } from '@mui/material/styles';
-import decorBg from "../../../assets/img/decorBg.png";
 import { theme } from '../../../core/theme';
+import decorBg from "../../../assets/img/decorBg.png";
 
 const styles: Record<string, SxProps<Theme>> = {
-
   container: {
     position: "relative",
-    width: "100%",
-    height: "100%",
-    backgroundImage: `url("${decorBg}")`,
+    width: 1,
+    height: 1,
+    backgroundImage: `url(${decorBg})`,
     backgroundPosition: "top",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
   },
   cloud: {
     mb: '-7px',
-    width: "100%",
+    width: 1,
   },
   content: {
-    pt: '100px',
-    [theme.breakpoints.down('md')]: {
-      pt: '60px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      pt: '20px',
-    },
+    pt: [2.5, 6, 10],
   },
   titleBox: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "100%",
-    mb: '80px',
-    [theme.breakpoints.down('sm')]: {
-      mb: '20px',
-    },
+    width: 1,
+    mb: [2, 2, 10],
   },
   title: {
     flexGrow: 1,
     textAlign: 'center',
-    px: 2,
+    px: [0.5, 1, 2],
     [theme.breakpoints.down('sm')]: {
-      px: 0.5,
-      maxWidth: '225px'
+      maxWidth: '225px',
     },
   },
   carouselContainer: {
-    mx: '60px',
-    [theme.breakpoints.down('sm')]: {
-      mx: '0'
-    },
+    mx: [0, 0, 6],
+    position: 'relative',
   },
   slider: {
     maxWidth: '1550px',
   },
   card: {
     display: 'flex',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
     flexDirection: 'column',
+    justifyContent: 'space-between',
     borderRadius: '10px',
     background: '#FFF',
-    height: '300px',
-    p: '16px 35px 35px 35px',
-    [theme.breakpoints.down('sm')]: {
-      p: '16px',
-      height: 'auto',
-    },
+    p: [1, 2, 4],
+    height: '100%', // Make all cards take the full height
   },
   image: {
-    maxHeight: '170px',
-    m: 'auto 0',
+    height: '170px',
+    width: 1,
+    objectFit: 'contain',
     [theme.breakpoints.down('sm')]: {
-      objectFit: 'contain',
-      width: '120px',
-      height: '120px',
+      height: '130px',
     },
   },
   cardTitle: {
@@ -87,24 +68,27 @@ const styles: Record<string, SxProps<Theme>> = {
   cardFooter: {
     display: "flex",
     flexDirection: "column",
-    width: '100%'
+    width: 1,
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+  button: {
+    alignSelf: 'center',
+    [theme.breakpoints.down('sm')]: {
+      width: 1,
+    },
   },
   arrowContainer: {
     width: 'auto',
     height: 'auto',
   },
   arrow: {
-    maxWidth: '100%',
+    maxWidth: 1,
     height: 'auto',
     [theme.breakpoints.down('sm')]: {
       maxWidth: '60px',
     },
   },
-  button: {
-    [theme.breakpoints.down('sm')]: {
-      width: '100%'
-    },
-  }
 };
 
 export default styles;

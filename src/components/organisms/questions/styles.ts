@@ -1,61 +1,60 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import questionsBg from "../../../assets/img/questionsBg.png";
 import { theme } from '../../../core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
     [theme.breakpoints.down('sm')]: {
-      pt: '25px',
-      pb: '40px',
+      pt: 2.5,
+      pb: 4,
     },
   },
   content: {
-    py: '100px',
+    py: 10,
     position: "relative",
-    width: "100%",
-    height: "100%",
+    width: 1,
+    height: 1,
     backgroundImage: `url("${questionsBg}")`,
     backgroundPosition: "top",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
     [theme.breakpoints.down('md')]: {
-      py: '50px',
+      py: 5,
     },
     [theme.breakpoints.down('sm')]: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      py: '0',
+      py: 0,
       backgroundImage: `none`,
     },
   },
   title: {
     maxWidth: "60%",
-    mb: '60px',
+    mb: [2.5, 6, 10],
     [theme.breakpoints.down('md')]: {
       maxWidth: "80%",
     },
     [theme.breakpoints.down('sm')]: {
       textAlign: "center",
-      maxWidth: "100%",
-      mb: '20px',
+      maxWidth: 1,
     },
   },
   subtitle: {
     display: "inline-block",
     maxWidth: "450px",
-    mb: '50px',
+    mb: 5,
     [theme.breakpoints.down('sm')]: {
       textAlign: "center",
-      maxWidth: "100%",
-      mb: '40px',
+      maxWidth: 1,
+      mb: 4,
     },
   },
   form: {
-    width: "100%",
+    width: 1,
   },
   item: {
-    width: '100%',
+    width: 1,
     maxWidth: "400px",
   },
   gridContainer: {
@@ -72,17 +71,17 @@ const styles: Record<string, SxProps<Theme>> = {
     },
   },
   image: {
-    height: "100%",
-    width: "100%",
-    maxHeight: "100%"
+    height: 1,
+    width: 1,
+    maxHeight: 1,
   },
   button: {
-    p: '23px 28px',
-    width: "100%",
+    p: 3,
+    width: 1,
     [theme.breakpoints.down('sm')]: {
-      mt: '20px',
+      mt: 2,
     },
-  }
+  },
 };
 
 export default styles;

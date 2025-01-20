@@ -4,23 +4,24 @@ import { theme } from '../../../core/theme';
 const styles: Record<string, SxProps<Theme>> = {
   container: {},
   content: {
-    alignItems: "end",
+    display: 'flex',
+    alignItems: "flex-end",
     flexWrap: 'nowrap',
-    p: '100px 0 100px 0',
+    padding: '100px 0',
     [theme.breakpoints.down('md')]: {
-      py: '60px',
+      paddingY: '60px',
     },
-    [theme.breakpoints.down('sm')]: {
-      py: '20px',
+    [theme.breakpoints.down('md')]: {
+      paddingY: '20px',
       flexDirection: 'column-reverse',
-      alignItems: 'flex-start'
+      alignItems: 'flex-start',
     },
   },
   title: {
-    mb: 4,
+    marginBottom: theme.spacing(4),
     [theme.breakpoints.down('sm')]: {
-      mb: 1.5,
-      maxWidth: '200px'
+      marginBottom: theme.spacing(1.5),
+      maxWidth: '200px',
     },
   },
   image: {
@@ -29,7 +30,7 @@ const styles: Record<string, SxProps<Theme>> = {
     padding: 0,
     margin: 0,
     objectFit: 'cover',
-    [theme.breakpoints.down('lg')]: {
+    [theme.breakpoints.down('sm')]: {
       minHeight: "240px",
     },
   },
@@ -37,7 +38,6 @@ const styles: Record<string, SxProps<Theme>> = {
     [theme.breakpoints.down('sm')]: {
       maxWidth: '255px',
     },
-
   }
 };
 

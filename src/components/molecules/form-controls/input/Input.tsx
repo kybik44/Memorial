@@ -24,7 +24,7 @@ const MuiInput: FC<IMuiInputProps> = ({
   ...otherProps
 }) => {
   return (
-    <FormControl sx={styles.formControl}>
+    <FormControl sx={{ ...styles.formControl, ...sx }}>
       {label && (
         <Text variant="h6" sx={styles.label}>
           {label}
@@ -35,6 +35,7 @@ const MuiInput: FC<IMuiInputProps> = ({
         id={`${name}-label`}
         placeholder={placeholder}
         sx={styles.input}
+        disabled={disabled}
         {...otherProps}
       />
     </FormControl>

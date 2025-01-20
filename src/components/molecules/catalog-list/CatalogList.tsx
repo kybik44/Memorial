@@ -1,57 +1,48 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Grid,
-} from "@mui/material";
-import Image from "mui-image";
-import Text from "../../atoms/text/Text.tsx";
-import styles from "./styles.ts";
-import { catalogItems } from "/utils/mock.tsx";
+import { Button, Card, CardMedia, Grid } from "@mui/material";
+import { FC } from "react";
+import { Link, useParams } from "react-router-dom";
+import styles from "./styles";
+import Text from "/components/atoms/text/Text";
 
-export interface CardListItem {
-  title: string;
-  image: string;
-  price: number;
+interface ICatalogList {
+  catalogItems: any[];
 }
 
-const CatalogList = () => {
+const CatalogList: FC<ICatalogList> = ({ catalogItems }) => {
+  const { section, subsection, productId } = useParams<{
+    section: string;
+    subsection: string;
+    productId: string;
+  }>();
   return (
     <Grid
       container
-      spacing={{ xs: 0, sm: 4, md: 5, lg: 5 }}
+      spacing={{ xs: 2, sm: 3, md: 4, lg: 6 }}
       sx={styles.gridContainer}
     >
-      {catalogItems.map(({ title, image, price }: CardListItem) => (
-        <Grid key={title} item xs={13} sm={6} md={4} lg={3}>
-          <Card sx={styles.card} key={`${title} ${image}`}>
-            <Box sx={styles.image}>
-              <Image
-                fit="contain"
-                alt={title}
-                src={image}
-                showLoading
-                duration={0}
-                errorIcon
-              />
-            </Box>
-            <Box sx={styles.cardInfo}>
-              <CardContent sx={styles.cardContent}>
-                <Text variant="h6" sx={styles.cardTitle}>
-                  {title}
-                </Text>
-                <Text variant="h4" sx={styles.cardTitle}>
-                  {`${price} бел. р`}
-                </Text>
-              </CardContent>
-              <CardActions>
-                <Button size="small" sx={styles.button}>
-                  Перейти в каталог
-                </Button>
-              </CardActions>
-            </Box>
+      {catalogItems.map(({ id, title, image, price }) => (
+        <Grid item key={id} xs={6} sm={6} md={6} lg={4} xl={3}>
+          <Card sx={styles.card}>
+            <CardMedia
+              component="img"
+              sx={styles.image}
+              image={image}
+              alt={title}
+            />
+            <Text variant="h5" component="div" sx={styles.cardTitle}>
+              {title}
+            </Text>
+            <Text variant="body2" fontWeight={700} color="text.secondary">
+              {price} бел. р
+            </Text>
+            <Button size="small" sx={styles.button}>
+              <Link
+                to={`/catalog/${section}/${subsection}/${id}`}
+                style={{ textDecoration: "none", color: "inherit" }}
+              >
+                Подробнее
+              </Link>
+            </Button>
           </Card>
         </Grid>
       ))}

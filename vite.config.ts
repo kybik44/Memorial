@@ -13,6 +13,9 @@ export default ({ mode }) => {
         '/components': resolve(__dirname, 'src', 'components'),
         '/icons': resolve(__dirname, 'src', 'icons'),
         '/utils': resolve(__dirname, 'src', 'utils'),
+        '/hooks': resolve(__dirname, 'src', 'hooks'),
+        '/api': resolve(__dirname, 'src', 'api'),
+        '/contexts': resolve(__dirname, 'src', 'contexts'),
         react: resolve(__dirname, 'node_modules/react')
       }
     },

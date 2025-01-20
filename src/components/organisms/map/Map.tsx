@@ -1,8 +1,8 @@
 import { Box, Link, Stack, Theme, useMediaQuery } from "@mui/material";
 import { Map, Placemark, YMaps } from "@pbe/react-yandex-maps";
-import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 import InstagramIcon from "/icons/InstagramIcon";
+import styles from "./styles";
 
 const MapY = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -16,18 +16,14 @@ const MapY = () => {
 
   return (
     <Box sx={styles.container}>
-      <Box sx={styles.map} id={"map"}>
+      <Box sx={styles.map} id="map">
         <YMaps>
           <Map defaultState={defaultMapState} width="100%" height="100%">
             <Placemark geometry={[53.929001, 27.622333]} />
           </Map>
         </YMaps>
         {isSmallScreen && (
-          <Link
-            href="https://yandex.by/maps/157/minsk/house/Zk4YcwFgSkYGQFtpfXR2eH9gYA==/?ll=27.560331%2C53.879334&z=17.6"
-            sx={styles.mapLink}
-            target="_blank"
-          >
+          <Link href="(link unavailable)" sx={styles.mapLink} target="_blank">
             <Text variant="body2">Смотреть на карте</Text>
           </Link>
         )}
@@ -41,11 +37,11 @@ const MapY = () => {
           </Text>
         </Box>
         <Stack
-          spacing={{ xs: "0", sm: "10px", xl: "25px" }}
+          spacing={{ xs: 0, sm: 1, xl: 2.5 }}
           sx={styles.infoContainer}
           direction="column"
         >
-          <Stack spacing="10px" sx={styles.infoBox}>
+          <Stack spacing={1} sx={styles.infoBox}>
             <Text variant="subtitle2" sx={styles.text}>
               Телефон
             </Text>
@@ -55,7 +51,7 @@ const MapY = () => {
               </Text>
             </Link>
           </Stack>
-          <Stack spacing="10px" sx={styles.infoBox}>
+          <Stack spacing={1} sx={styles.infoBox}>
             <Text variant="subtitle2" sx={styles.text}>
               Адрес магазина
             </Text>
@@ -63,27 +59,24 @@ const MapY = () => {
               г. Минск, ул. Бакинская, д. 56, кв. 5
             </Text>
             {!isSmallScreen && (
-              <Link
-                href="https://yandex.by/maps/157/minsk/house/Zk4YcwFgSkYGQFtpfXR2eH9gYA==/?ll=27.560331%2C53.879334&z=17.6"
-                target="_blank"
-              >
-                <Text variant="body2" sx={styles.text}>
+              <Link href="(link unavailable)" target="_blank">
+                <Text variant="body1" sx={styles.show}>
                   Смотреть на карте
                 </Text>
               </Link>
             )}
           </Stack>
-          <Stack spacing="10px" sx={styles.infoBox}>
+          <Stack spacing={1} sx={styles.infoBox}>
             <Text variant="subtitle2" sx={styles.text}>
               E-mail:
             </Text>
-            <Link variant="body2" href="email:123456789@mail.ru">
+            <Link variant="body2" href="mailto:123456789@mail.ru">
               <Text variant="body2" sx={styles.text}>
                 123456789@mail.ru
               </Text>
             </Link>
           </Stack>
-          <Stack spacing="10px" sx={styles.infoBox}>
+          <Stack spacing={1} sx={styles.infoBox}>
             <Text variant="subtitle2" sx={styles.text}>
               Время работы:
             </Text>
@@ -93,7 +86,7 @@ const MapY = () => {
           </Stack>
         </Stack>
         <Link
-          href="https://www.instagram.com/?hl=ru"
+          href="(link unavailable)"
           sx={styles.instagramLink}
           target="_blank"
         >

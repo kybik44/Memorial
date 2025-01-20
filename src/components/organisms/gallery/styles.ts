@@ -1,4 +1,4 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import kindsBg from "../../assets/img/kindsBg.png";
 import { theme } from '../../../core/theme';
 
@@ -11,59 +11,54 @@ const styles: Record<string, SxProps<Theme>> = {
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'column',
-    py: '100px',
+    py: [2, 5, 10],
     [theme.breakpoints.down('md')]: {
-      py: "50px",
+      py: 5,
     },
     [theme.breakpoints.down('sm')]: {
-      py: "20px",
+      py: 2,
     },
   },
   title: {
-    mb: "100px",
-    [theme.breakpoints.down('md')]: {
-      mb: "40px",
-    },
-    [theme.breakpoints.down('sm')]: {
-      mb: "15px",
-    },
+    mb: [1.5, 4, 10],
   },
   gridContainer: {
     display: "flex",
     alignItems: "stretch",
   },
   imageList: {
-    width: '100%',
-    height: '100%',
-    'msOverflowStyle': 'none',  /* IE and Edge */
-    'scrollbarWidth': 'none',  /* Firefox */
-    '&::-webkit-scrollbar': { /* Chrome */
+    width: 1,
+    height: 1,
+    msOverflowStyle: 'none',
+    scrollbarWidth: 'none',
+    '&::-webkit-scrollbar': {
       display: 'none',
     },
   },
   listItem: {
     cursor: 'pointer',
-    transition: 'all 1s ease',
+    transition: 'transform 1s ease',
     '&:hover': {
-      transform: 'scale(1.05)'
-    }
+      transform: 'scale(1.05)',
+    },
   },
   button: {
     maxWidth: '440px',
-    mt: '50px'
-  },
-  backdrop: {
-    zIndex: (theme) => theme.zIndex.drawer + 1
+    mt: [1.5, 3, 5],
   },
   modalBox: {
-    position: 'relative',
+    position: 'absolute',
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '100%',
+    width: '80%',
+    height: '80%',
     '&:focus-visible': {
       outline: 'none',
-    }
+    },
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   box: {
     width: 1,
@@ -74,10 +69,19 @@ const styles: Record<string, SxProps<Theme>> = {
   navButton: {
     display: 'flex',
     justifyContent: 'center',
-    width: '100%',
-    height: '100%',
+    alignItems: 'center',
+    height: '100%', // Full height to center vertically
+    width: 'auto',
     zIndex: 10,
     cursor: 'pointer',
+  },
+  imageContainer: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   arrow: {
     height: '40px',
@@ -85,27 +89,22 @@ const styles: Record<string, SxProps<Theme>> = {
     fill: '#fff',
     '&:hover': {
       fill: '#BCBCBC',
-      filter: 'drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4))',
-    }
+      filter: 'drop-shadow(3px 5px 2px rgba(0, 0, 0, 0.4))',
+    },
   },
   close: {
     width: '34px',
     height: '34px',
     position: 'absolute',
-    top: '-5%',
-    right: '5%',
+    top: ['1%', '5%', '-5%'], // Responsive top position
+    right: ['1%', '5%', '5%'], // Responsive right position
     fill: '#fff',
     cursor: 'pointer',
     '&:hover': {
       fill: '#BCBCBC',
-      filter: 'drop-shadow(3px 5px 2px rgb(0 0 0 / 0.4))',
+      filter: 'drop-shadow(3px 5px 2px rgba(0, 0, 0, 0.4))',
     },
-    [theme.breakpoints.down('sm')]: {
-      top: '-18%',
-      right: '1%',
-    },
-  }
-
+  },
 };
 
 export default styles;

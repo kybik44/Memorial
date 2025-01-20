@@ -1,19 +1,28 @@
-import { Box, Button, Container, Theme, useMediaQuery } from "@mui/material";
-import { useState } from "react";
-import Text from "/components/atoms/text/Text.tsx";
-import GraniteList from "./GraniteList.tsx";
-import styles from "./styles.ts";
-import { graniteItems } from "/utils/mock.tsx";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  Theme,
+  useMediaQuery,
+} from "@mui/material";
+import React from "react";
+import GraniteList from "./GraniteList";
+import styles from "./styles";
+import Text from "/components/atoms/text/Text";
+import { useMainPageContext } from "/contexts/MainPageContext";
 
 const Granite = () => {
+  const { materials, loadingMaterials } = useMainPageContext();
+  const [expanded, setExpanded] = React.useState(false);
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-  const [expanded, setExpanded] = useState(true);
 
-  const onExpand = () => {
-    setExpanded((prev) => !prev);
-  };
+  const toggleExpand = () => setExpanded((prevExpanded) => !prevExpanded);
+
+  // Если materials undefined или пустой, возвращаем null
+  if (!materials || materials.length === 0) return null;
 
   return (
     <Box sx={styles.container}>
@@ -25,18 +34,31 @@ const Granite = () => {
         >
           Виды гранита
         </Text>
-        <GraniteList cards={graniteItems} expanded={expanded} />
-        <Button onClick={onExpand} sx={{ ...styles.button }}>
-          {expanded ? "Развернуть" : "Свернуть"}
-        </Button>
+        {loadingMaterials ? (
+          <Grid item xs={12}>
+            Loading materials...
+          </Grid>
+        ) : (
+          <>
+            <GraniteList materials={materials} expanded={expanded} />
+            {materials.length > 12 && (
+              <Button onClick={toggleExpand} sx={styles.button}>
+                {expanded ? "Свернуть" : "Развернуть"}
+              </Button>
+            )}
+          </>
+        )}
       </Container>
-      <Box
-        sx={{
-          ...styles.smog,
-          opacity: expanded ? "1" : "0",
-          transition: "opacity 0.3s ease",
-        }}
-      />
+      {!expanded && materials.length > 12 && (
+        <Box
+          sx={{
+            ...styles.smog,
+            opacity: expanded ? 0 : 1,
+            transform: expanded ? "translateY(100%)" : "translateY(0)",
+            transition: "opacity 1s ease, transform 1s ease",
+          }}
+        />
+      )}
     </Box>
   );
 };

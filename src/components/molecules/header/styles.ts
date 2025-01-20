@@ -1,5 +1,5 @@
-import { Theme, SxProps } from '@mui/material/styles';
-import { theme } from '../../../core/theme';
+import { SxProps, Theme } from '@mui/material/styles';
+import { theme } from '/core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
@@ -7,28 +7,28 @@ const styles: Record<string, SxProps<Theme>> = {
   },
   drawer: {
     width: '80vw',
-    p: '80px 20px'
+    p: '80px 20px',
   },
   links: {
     justifyContent: 'space-evenly',
-    alignItems: 'center'
   },
   navItem: {
     display: 'flex',
-    alignItems: 'center',
     p: 0,
-    mr: '20px',
+    mr: 2,
     textTransform: 'uppercase',
     cursor: 'pointer',
     [theme.breakpoints.down('sm')]: {
-      maxWidth: '280px'
+      maxWidth: '280px',
     },
   },
   linkText: {
-    [theme.breakpoints.down('sm')]: {
+    textTransform: "uppercase",
+    marginRight: 1,
+    [theme.breakpoints.down('md')]: {
       fontSize: '20px',
       lineHeight: '20px',
-      maxWidth: '280px'
+      maxWidth: '280px',
     },
   },
   phone: {
@@ -38,6 +38,11 @@ const styles: Record<string, SxProps<Theme>> = {
     textDecoration: 'none',
     cursor: 'pointer',
   },
+  close: {
+    position: 'absolute',
+    top: '20px',
+    right: '25px'
+  }
 };
 
 export default styles;

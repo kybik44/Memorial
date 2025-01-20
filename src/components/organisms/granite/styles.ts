@@ -1,72 +1,95 @@
-import { Theme, SxProps, keyframes } from '@mui/material/styles';
-import smog from "../../../assets/img/smog.png";
-import { theme } from '../../../core/theme';
+import { SxProps, Theme } from '@mui/material/styles';
+import smogImage from "../../../assets/img/smog.png";
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
     position: 'relative',
     textAlign: 'center',
+    overflow: 'hidden',
   },
   content: {
-    py: '100px',
-    [theme.breakpoints.down('md')]: {
-      py: '60px',
-    },
-    [theme.breakpoints.down('sm')]: {
-      py: '20px',
-    },
+    py: [2, 6, 10],
   },
   title: {
-    mb: 9,
-    [theme.breakpoints.down('sm')]: {
-      mb: 2,
+    mb: [2.5, 4, 8],
+  },
+  cards: {},
+  cardContainer: {
+    perspective: 1000,
+    maxWidth: 300,
+    maxHeight: 300,
+    '&:hover $cardInner': {
+      transform: 'rotateY(180deg)',
     },
   },
-  cards: {
+  card: {
+    width: '100%',
+    height: '100%',
+    // mb: [2, 4, 4]
   },
-  cardContainer: {
-    maxWidth: '300px',
-    maxHeight: '300px',
+  cardInner: {
+    position: 'relative',
+    width: '100%',
+    height: '100%',
+    textAlign: 'center',
+    transition: 'transform 1s',
+    transformStyle: 'preserve-3d',
+  },
+  cardFlipped: {
+    transform: 'rotateY(180deg)',
+  },
+  cardFront: {
+    // position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backfaceVisibility: 'hidden',
+  },
+  cardBack: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#fff',
+    color: 'black',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    transform: 'rotateY(180deg)',
+    backfaceVisibility: 'hidden',
+    textAlign: 'left'
   },
   cardText: {
     textAlign: 'center',
-    mt: '7px',
-    [theme.breakpoints.down('sm')]: {
-      mt: '3px'
-    },
+    mt: 0.75,
+  },
+  cardDescription: {
+    lineHeight: '90%'
   },
   smog: {
     position: "absolute",
-    bottom: "0",
-    width: "100%",
-    height: "50%",
-    backgroundImage: `url("${smog}")`,
+    bottom: 0,
+    width: '100%',
+    height: ['35%', '35%', '50%'],
+    backgroundImage: `url("${smogImage}")`,
     backgroundPosition: "bottom",
     backgroundSize: "cover",
     backgroundRepeat: "no-repeat",
-    zIndex: "1",
-    opacity: "0",
-    transition: 'opacity 1s ease',
-    [theme.breakpoints.down('sm')]: {
-      height: "35%",
-    },
+    zIndex: 1,
+    opacity: 1,
+    transform: 'translateY(0)',
+    transition: 'all 1s ease',
   },
   button: {
-    zIndex: '2',
-    mt: '0',
-    transition: 'all 2s ease',
+    zIndex: 2,
+    mt: 0,
+    transition: 'all 1s ease',
     width: '100%',
-    maxWidth: '280px',
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '100%',
-    },
+    maxWidth: ['100%', '100%', '280px'],
   },
   collapse: {
     "& .MuiCollapse-wrapperInner": {
-      marginBottom: "100px",
-      [theme.breakpoints.down('sm')]: {
-        marginBottom: "30px",
-      },
+      marginBottom: [3, 3, 10],
     }
   }
 };

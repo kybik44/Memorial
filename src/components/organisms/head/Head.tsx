@@ -11,7 +11,7 @@ const Head = () => {
           container
           direction="column"
           flexWrap="nowrap"
-          rowGap={{ xs: "240px", sm: "240px" }}
+          rowGap={{ xs: 30, sm: 30 }}
           sx={styles.gridContainer}
         >
           <Grid item lg={6} sx={styles.logo}>

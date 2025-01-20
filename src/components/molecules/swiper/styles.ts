@@ -1,18 +1,30 @@
-import { Theme, SxProps } from '@mui/material/styles';
+import { SxProps, Theme } from '@mui/material/styles';
 import { theme } from '../../../core/theme';
-import decorBg from "../../assets/img/decorBg.png";
-import decorBgMobile from "../../assets/img/decorBgMobile.png";
 
 const styles: Record<string, SxProps<Theme>> = {
+  container: {
+    position: 'relative',
+    width: '100%',
+  },
   carouselContainer: {
     position: 'relative',
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
   },
-  slider: {
-    // maxWidth: '1550px'
+  slideContainer: {
+    display: 'flex',
+    transition: 'transform 0.5s ease',
+    width: '100%',
+    height: '100%',
+  },
+  slide: {
+    flex: '0 0 auto',
+    width: '100%',
+    height: '100%',
   },
   sliderArrow: {
     position: 'absolute',
-
     top: '50%',
     transform: 'translateY(-50%)',
     width: '64px',
@@ -20,37 +32,35 @@ const styles: Record<string, SxProps<Theme>> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1,
+    zIndex: 2, // Increase z-index to ensure visibility
     cursor: 'pointer',
     transition: 'all 0.3s ease-out',
-    left: '-6%',
+    left: '0',
+    marginLeft: '-50px',
     [theme.breakpoints.down('md')]: {
-      left: '-10%',
-    },
-    [theme.breakpoints.down('sm')]: {
-      left: '0',
+      marginLeft: '-8px',
     },
     '&:last-of-type': {
       left: 'auto',
-      right: '-6%',
+      right: '0',
+      marginRight: '-50px',
       [theme.breakpoints.down('md')]: {
-        right: '-10%',
+        marginRight: '-8px',
       },
-      [theme.breakpoints.down('sm')]: {
-        right: '0',
-      },
-
     },
     '& svg': {
       fill: '#fff',
       width: '40px',
       height: '40px',
+      [theme.breakpoints.down('md')]: {
+        width: '24px',
+        height: '24px',
+      },
       '&:hover': {
         fill: '#BCBCBC',
-        filter: 'drop-shadow(0px 4px 4px rgb(0 0 0 / 0.4))',
-      }
-
-    }
+        filter: 'drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4))',
+      },
+    },
   },
 };
 

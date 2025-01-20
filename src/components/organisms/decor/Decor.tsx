@@ -5,12 +5,20 @@ import carouselCloud from "../../../assets/img/carouselCloud.png";
 import Text from "../../atoms/text/Text";
 import Carousel from "./Carousel";
 import styles from "./styles";
-import { decorItems } from "../../../utils/mock";
+import { useMainPageContext } from "/contexts/MainPageContext";
+import Loading from "/components/atoms/loading/Loading";
 
 const Decor = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
+  const { decorCatalog, loadingCatalogs } = useMainPageContext();
+
+  if (loadingCatalogs) {
+    return <Loading />;
+  }
+
+  if (!decorCatalog.length) return null;
 
   return (
     <Box sx={styles.container}>
@@ -20,7 +28,7 @@ const Decor = () => {
             <Box
               component="img"
               sx={styles.arrow}
-              alt="Arrows"
+              alt="Arrow left"
               src={arrowLeft}
             />
           </Box>
@@ -35,12 +43,19 @@ const Decor = () => {
             <Box
               component="img"
               sx={styles.arrow}
-              alt="Arrows"
+              alt="Arrow right"
               src={arrowRight}
             />
           </Box>
         </Box>
-        <Carousel items={decorItems} />
+        <Carousel
+          items={decorCatalog.map((item) => ({
+            id: item.id,
+            title: item.title,
+            link: item.full_slug,
+            image: item.image || "",
+          }))}
+        />
       </Container>
       <Box component={"img"} src={carouselCloud} sx={styles.cloud} />
     </Box>

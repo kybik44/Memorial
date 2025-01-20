@@ -20,17 +20,18 @@ interface IForm {
   name: string;
   phone: string;
 }
+
 const Questions = () => {
   const phoneRegExp =
     /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const schema = useMemo(
     () =>
       yup.object({
-        name: yup.string().required(),
+        name: yup.string().required("Name is required"),
         phone: yup
           .string()
           .matches(phoneRegExp, "Phone number is not valid")
-          .required(),
+          .required("Phone number is required"),
       }),
     []
   );
@@ -44,8 +45,6 @@ const Questions = () => {
     mode: "onChange",
   });
 
-  // const name = useWatch({ control: methods.control, name: 'name' });
-
   const onSubmit = (data: IForm) => {
     console.log(data);
   };
@@ -56,9 +55,9 @@ const Questions = () => {
         <Box
           component="img"
           sx={styles.image}
-          alt="Arrows"
+          alt="Questions Background"
           src={questionsMobile}
-          mb="20px"
+          mb={2}
         />
       )}
       <Container maxWidth="xl" sx={styles.content}>
@@ -87,7 +86,9 @@ const Questions = () => {
               />
             </Grid>
             <Grid item sx={styles.item}>
-              <Button sx={styles.button}>Оставить заявку</Button>
+              <Button type="submit" sx={styles.button}>
+                Оставить заявку
+              </Button>
             </Grid>
           </Grid>
         </Form>

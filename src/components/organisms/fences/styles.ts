@@ -3,7 +3,6 @@ import cloudFencies from "../../assets/img/cloudFencies.png";
 import { theme } from '../../../core/theme';
 
 const styles: Record<string, SxProps<Theme>> = {
-
   container: {
     position: "relative",
   },
@@ -11,22 +10,22 @@ const styles: Record<string, SxProps<Theme>> = {
     display: 'flex',
     textAlign: 'center',
     flexDirection: 'column',
-    py: '100px',
+    py: [10, 12, 12],
     [theme.breakpoints.down('md')]: {
-      py: '50px',
+      py: 50,
     },
     [theme.breakpoints.down('sm')]: {
-      pt: '10px',
-      pb: '30px',
+      pt: 10,
+      pb: 30,
     },
   },
   title: {
-    mb: "80px",
+    mb: [2.5, 4, 8],
     [theme.breakpoints.down('md')]: {
-      mb: "40px",
+      mb: 4,
     },
     [theme.breakpoints.down('sm')]: {
-      mb: "30px",
+      mb: 3,
     },
   },
   gridContainer: {
@@ -42,36 +41,35 @@ const styles: Record<string, SxProps<Theme>> = {
     justifyContent: 'flex-end',
     alignItems: 'center',
     flexDirection: 'column',
-    p: '25px 15px 35px 15px',
-    boxShadow: '0',
+    p: [2, 4],
+    boxShadow: 'none',
     backgroundColor: '#fff',
     [theme.breakpoints.down('sm')]: {
-      px: '0',
-      py: '10px'
+      px: 0,
+      py: 1,
     },
   },
   cardTitle: {
-    // mb: 0.5,
     [theme.breakpoints.down('sm')]: {
-      p: '5px',
+      p: 1,
     },
   },
   image: {
-    width: '100%',
+    width: 1,
     objectFit: 'contain',
     maxWidth: '450px',
-    maxHeight: '250px'
+    maxHeight: '250px',
   },
   actions: {
     [theme.breakpoints.down('sm')]: {
-      width: '100%',
+      width: 1,
       maxWidth: '200px',
-      p: 0
+      p: 0,
     },
   },
   button: {
-    width: '100%'
-  }
+    width: 1,
+  },
 };
 
 export default styles;
