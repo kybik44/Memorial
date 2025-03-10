@@ -1,6 +1,7 @@
-import { FormControl, OutlinedInput } from "@mui/material";
+import { FormControl, OutlinedInput, FormHelperText } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { FC } from "react";
+import { useFormContext } from "react-hook-form";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 
@@ -23,21 +24,35 @@ const MuiInput: FC<IMuiInputProps> = ({
   disabled = false,
   ...otherProps
 }) => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
+
+  const error = errors[name];
+
   return (
-    <FormControl sx={{ ...styles.formControl, ...sx }}>
+    <FormControl sx={{ ...styles.formControl, ...sx }} error={!!error}>
       {label && (
         <Text variant="h6" sx={styles.label}>
           {label}
         </Text>
       )}
       <OutlinedInput
+        {...register(name)}
         notched
         id={`${name}-label`}
         placeholder={placeholder}
         sx={styles.input}
         disabled={disabled}
+        error={!!error}
         {...otherProps}
       />
+      {error && (
+        <FormHelperText error sx={styles.errorText}>
+          {error.message as string}
+        </FormHelperText>
+      )}
     </FormControl>
   );
 };

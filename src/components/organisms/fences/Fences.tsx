@@ -6,24 +6,24 @@ import { useMainPageContext } from "/contexts/MainPageContext";
 import Loading from "/components/atoms/loading/Loading";
 
 const Fences = () => {
-  const { fencesCatalog, loadingCatalogs } = useMainPageContext();
+  const { fencesCatalog, catalogSections } = useMainPageContext();
 
-  if (loadingCatalogs) {
-    return <Loading />;
-  }
-
-  if (!fencesCatalog.length) return null;
+  // Находим секцию с position: 3
+  const fencesSection = catalogSections.find(section => section.position === 3);
+  
+  if (!fencesCatalog.length || !fencesSection) return null;
 
   return (
     <Box sx={styles.container}>
       <Container maxWidth="xl" sx={styles.content}>
         <Text variant="h1" multiline sx={styles.title}>
-          Благоустройство и ограды
+          {fencesSection.title}
         </Text>
         <FencesList
-          cards={fencesCatalog.map((item) => ({
+          items={fencesCatalog.map((item) => ({
             title: item.title,
             image: item.image || "",
+            slug: item.full_slug,
           }))}
         />
       </Container>

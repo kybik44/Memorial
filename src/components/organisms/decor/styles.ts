@@ -1,5 +1,5 @@
-import { SxProps, Theme } from '@mui/material/styles';
-import { theme } from '../../../core/theme';
+import { SxProps, Theme } from "@mui/material/styles";
+import { theme } from "../../../core/theme";
 import decorBg from "../../../assets/img/decorBg.png";
 
 const styles: Record<string, SxProps<Theme>> = {
@@ -13,7 +13,7 @@ const styles: Record<string, SxProps<Theme>> = {
     backgroundRepeat: "no-repeat",
   },
   cloud: {
-    mb: '-7px',
+    mb: "-7px",
     width: 1,
   },
   content: {
@@ -28,65 +28,87 @@ const styles: Record<string, SxProps<Theme>> = {
   },
   title: {
     flexGrow: 1,
-    textAlign: 'center',
+    textAlign: "center",
     px: [0.5, 1, 2],
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '225px',
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: "225px",
     },
   },
   carouselContainer: {
-    mx: [0, 0, 6],
-    position: 'relative',
+    width: "100%",
+    mt: [2, 4, 6],
   },
   slider: {
-    maxWidth: '1550px',
+    maxWidth: "1550px",
   },
   card: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    borderRadius: '10px',
-    background: '#FFF',
+    height: "100%",
+    width: "100%",
+    alignItems: "stretch",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    borderRadius: "10px",
+    background: "#FFF",
     p: [1, 2, 4],
-    height: '100%', // Make all cards take the full height
   },
-  image: {
-    height: '170px',
-    width: 1,
-    objectFit: 'contain',
-    [theme.breakpoints.down('sm')]: {
-      height: '130px',
+  imageContainer: {
+    width: "100%",
+    height: "200px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    [theme.breakpoints.down("sm")]: {
+      height: "130px",
     },
   },
+  imageWrapper: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    borderRadius: "10px",
+    backgroundColor: "transparent",
+  },
   cardTitle: {
-    textAlign: 'center',
+    fontWeight: 600,
+    textAlign: "center",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
     mb: 2,
-    [theme.breakpoints.down('sm')]: {
-      fontSize: '16px',
+    [theme.breakpoints.down("sm")]: {
+      fontSize: "16px",
     },
   },
   cardFooter: {
     display: "flex",
     flexDirection: "column",
-    width: 1,
-    flexGrow: 1,
-    justifyContent: 'space-between',
+    gap: 2,
+    padding: 2,
+    height: "100px",
+    justifyContent: "space-between",
   },
   button: {
-    alignSelf: 'center',
-    [theme.breakpoints.down('sm')]: {
+    width: "100%",
+    alignSelf: "center",
+    [theme.breakpoints.down("sm")]: {
       width: 1,
     },
   },
   arrowContainer: {
-    width: 'auto',
-    height: 'auto',
+    width: "auto",
+    height: "auto",
   },
   arrow: {
     maxWidth: 1,
-    height: 'auto',
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '60px',
+    height: "auto",
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: "60px",
     },
   },
 };

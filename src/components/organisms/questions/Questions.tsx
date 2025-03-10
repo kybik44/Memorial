@@ -22,16 +22,26 @@ interface IForm {
 }
 
 const Questions = () => {
-  const phoneRegExp =
-    /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+  const belarusPhoneRegExp = /^\+375(29|33|44)\d{7}$/;
+  const russianPhoneRegExp = /^\+7\d{10}$/;
+
   const schema = useMemo(
     () =>
       yup.object({
-        name: yup.string().required("Name is required"),
+        name: yup
+          .string()
+          .required("Имя обязательно")
+          .min(2, "Имя должно содержать минимум 2 символа")
+          .matches(/^[а-яА-Яa-zA-Z\s]*$/, "Имя может содержать только буквы"),
         phone: yup
           .string()
-          .matches(phoneRegExp, "Phone number is not valid")
-          .required("Phone number is required"),
+          .required("Номер телефона обязателен")
+          .matches(
+            new RegExp(
+              `${belarusPhoneRegExp.source}|${russianPhoneRegExp.source}`
+            ),
+            "Введите корректный номер телефона в формате +375(29|33|44)XXXXXXX или +7XXXXXXXXXX"
+          ),
       }),
     []
   );
@@ -43,10 +53,24 @@ const Questions = () => {
   const methods = useForm<IForm>({
     resolver: yupResolver(schema),
     mode: "onChange",
+    defaultValues: {
+      name: "",
+      phone: "",
+    },
   });
 
-  const onSubmit = (data: IForm) => {
-    console.log(data);
+  const onSubmit = async (data: IForm) => {
+    try {
+      console.log("Form data:", data);
+      // Здесь будет отправка данных на сервер
+      methods.reset();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  const onError = (errors: any) => {
+    console.error("Form errors:", errors);
   };
 
   return (
@@ -67,13 +91,18 @@ const Questions = () => {
         <Text variant="subtitle2" sx={styles.subtitle}>
           Оставьте заявку, чтобы получить БЕСПЛАТНУЮ консультацию
         </Text>
-        <Form methods={methods} onSubmit={onSubmit} sx={styles.form}>
+        <Form
+          methods={methods}
+          onSubmit={onSubmit}
+          onInvalid={onError}
+          sx={styles.form}
+        >
           <Grid container rowGap={3} columnGap={6} sx={styles.gridContainer}>
             <Grid item sx={styles.item}>
               <MuiInput
                 name="name"
                 label="Ваше имя"
-                placeholder="Ваше имя"
+                placeholder="Иван"
                 sx={styles.input}
               />
             </Grid>
@@ -81,12 +110,16 @@ const Questions = () => {
               <MuiInput
                 name="phone"
                 label="Ваш номер телефона"
-                placeholder="+375 (____) ___ - __ - ___"
+                placeholder="+375 29 XXX-XX-XX"
                 sx={styles.input}
               />
             </Grid>
             <Grid item sx={styles.item}>
-              <Button type="submit" sx={styles.button}>
+              <Button
+                type="submit"
+                sx={styles.button}
+                disabled={!methods.formState.isValid}
+              >
                 Оставить заявку
               </Button>
             </Grid>

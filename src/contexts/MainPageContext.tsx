@@ -16,25 +16,30 @@ import { MainPage as IMainPage, Material, Catalog, OurWorks } from "/api/types";
 interface MainPageContextType {
   mainPageData: IMainPage | undefined;
   materials: Material[];
-  catalogs: Catalog[];
-  ourWorks: OurWorks[];
   kindsCatalog: Catalog[];
   fencesCatalog: Catalog[];
   decorCatalog: Catalog[];
   loading: boolean;
   loadingMaterials: boolean;
-  loadingCatalogs: boolean;
-  loadingOurWorks: boolean;
   error: string | null;
   refreshData: () => void;
   fetchMaterials: () => void;
-  fetchCatalogs: () => void;
-  fetchOurWorks: () => void;
+  catalogSections: CatalogSection[];
 }
 
 const MainPageContext = createContext<MainPageContextType | undefined>(
   undefined
 );
+
+interface CatalogSection {
+  id: number;
+  catalog: Catalog[];
+  title: string;
+  carousel: boolean;
+  position: number;
+  created_at: string;
+  updated_at: string;
+}
 
 export const MainPageProvider: React.FC<{ children: ReactNode }> = ({
   children,
@@ -43,93 +48,66 @@ export const MainPageProvider: React.FC<{ children: ReactNode }> = ({
     undefined
   );
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [catalogs, setCatalogs] = useState<Catalog[]>([]);
-  const [ourWorks, setOurWorks] = useState<OurWorks[]>([]);
   const [kindsCatalog, setKindsCatalog] = useState<Catalog[]>([]);
   const [fencesCatalog, setFencesCatalog] = useState<Catalog[]>([]);
   const [decorCatalog, setDecorCatalog] = useState<Catalog[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingMaterials, setLoadingMaterials] = useState<boolean>(true);
-  const [loadingCatalogs, setLoadingCatalogs] = useState<boolean>(true);
-  const [loadingOurWorks, setLoadingOurWorks] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [catalogSections, setCatalogSections] = useState<CatalogSection[]>([]);
 
   const fetchData = async () => {
-    setLoading(true);
-    try {
-      const data = await getMainPageData();
-      setMainPageData(data);
-    } catch (error) {
-      setError("Error fetching main page data.");
-    } finally {
-      setLoading(false);
+    if (!mainPageData) {
+      setLoading(true);
+      try {
+        const data = await getMainPageData();
+        if (data) {
+          setMainPageData(data);
+          const sortedSections = [...data.catalogs].sort((a, b) => a.position - b.position);
+          setCatalogSections(sortedSections);
+          
+          sortedSections.forEach(section => {
+            if (section.carousel) {
+              setDecorCatalog(section.catalog);
+            } else {
+              switch (section.position) {
+                case 1:
+                  setKindsCatalog(section.catalog);
+                  break;
+                case 3:
+                  setFencesCatalog(section.catalog);
+                  break;
+              }
+            }
+          });
+        }
+      } catch (error) {
+        setError("Error fetching main page data.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   const fetchMaterials = async () => {
-    setLoadingMaterials(true);
-    try {
-      const result = await getMaterialsList(1);
-      if (result) {
-        setMaterials(result.results);
+    if (materials.length === 0) {
+      setLoadingMaterials(true);
+      try {
+        const result = await getMaterialsList(1);
+        if (result) {
+          setMaterials(result.results);
+        }
+      } catch (error) {
+        setError("Error fetching materials.");
+      } finally {
+        setLoadingMaterials(false);
       }
-    } catch (error) {
-      setError("Error fetching materials.");
-    } finally {
-      setLoadingMaterials(false);
-    }
-  };
-
-  const fetchCatalogs = async () => {
-    setLoadingCatalogs(true);
-    try {
-      const result = await getCatalogList();
-      console.log("Fetched catalogs:", result); // Добавляем логирование
-      if (result && Array.isArray(result)) {
-        setCatalogs(result);
-
-        const kindsData = result.find((c) => c.slug === "pamyatniki");
-        console.log("Kinds Data:", kindsData); // Логирование kindsData
-
-        const fencesData = result.find(
-          (c) => c.slug === "blagoustrojstvo-i-ogrady"
-        );
-        console.log("Fences Data:", fencesData); // Логирование fencesData
-
-        const decorData = result.find((c) => c.slug === "oformlenie-i-dekor");
-        console.log("Decor Data:", decorData); // Логирование decorData
-
-        setKindsCatalog(kindsData ? kindsData.children : []);
-        setFencesCatalog(fencesData ? fencesData.children : []);
-        setDecorCatalog(decorData ? decorData.children : []);
-      }
-    } catch (error) {
-      console.error("Error fetching catalogs:", error);
-      setError("Error fetching catalogs.");
-    } finally {
-      setLoadingCatalogs(false);
-    }
-  };
-
-  const fetchOurWorks = async () => {
-    setLoadingOurWorks(true);
-    try {
-      const result = await getOurWorksList();
-      if (result) {
-        setOurWorks(result);
-      }
-    } catch (error) {
-      setError("Error fetching our works.");
-    } finally {
-      setLoadingOurWorks(false);
     }
   };
 
   useEffect(() => {
     fetchData();
     fetchMaterials();
-    fetchCatalogs();
-    fetchOurWorks(); // Fetch our works data on mount
   }, []);
 
   return (
@@ -137,20 +115,15 @@ export const MainPageProvider: React.FC<{ children: ReactNode }> = ({
       value={{
         mainPageData,
         materials,
-        catalogs,
-        ourWorks,
         kindsCatalog,
         fencesCatalog,
         decorCatalog,
         loading,
         loadingMaterials,
-        loadingCatalogs,
-        loadingOurWorks,
         error,
         refreshData: fetchData,
         fetchMaterials,
-        fetchCatalogs,
-        fetchOurWorks,
+        catalogSections,
       }}
     >
       {children}

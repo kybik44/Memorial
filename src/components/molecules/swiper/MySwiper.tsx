@@ -1,4 +1,10 @@
-import React, { ReactNode, useRef, useState, useEffect } from "react";
+import React, {
+  ReactNode,
+  useRef,
+  useState,
+  useEffect,
+  TouchEvent,
+} from "react";
 import { Box, SxProps, Theme } from "@mui/material";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIosOutlined";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
@@ -39,6 +45,18 @@ const MySwiper: React.FC<CarouselProps> = ({
   const [slidesPerView, setSlidesPerView] = useState(slidesToShow);
   const containerRef = useRef<HTMLDivElement>(null);
   const slideContainerRef = useRef<HTMLDivElement>(null);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  const minSwipeDistance = 50;
+
+  const totalSlides = React.Children.count(children);
+
+  useEffect(() => {
+    if (currentIndex >= totalSlides) {
+      setCurrentIndex(0);
+    }
+  }, [totalSlides, currentIndex]);
 
   const updateSlidesPerView = () => {
     if (breakpoints) {
@@ -63,11 +81,9 @@ const MySwiper: React.FC<CarouselProps> = ({
     };
   }, []);
 
-  const totalSlides = React.Children.count(children);
-
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex - 1;
+      const newIndex = Math.max(0, prevIndex - 1);
       if (onSlideChange) onSlideChange(newIndex);
       return newIndex;
     });
@@ -75,15 +91,44 @@ const MySwiper: React.FC<CarouselProps> = ({
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex + 1;
+      const newIndex = Math.min(totalSlides - slidesPerView, prevIndex + 1);
       if (onSlideChange) onSlideChange(newIndex);
       return newIndex;
     });
   };
 
+  const onTouchStart = (e: TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && currentIndex < totalSlides - slidesPerView) {
+      handleNext();
+    }
+    if (isRightSwipe && currentIndex > 0) {
+      handlePrev();
+    }
+  };
+
   return (
     <Box sx={{ ...styles.container, ...sx }} ref={containerRef}>
-      <Box sx={styles.carouselContainer}>
+      <Box
+        sx={styles.carouselContainer}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
         <Box
           ref={slideContainerRef}
           sx={{

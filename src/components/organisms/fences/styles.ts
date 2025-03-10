@@ -11,13 +11,13 @@ const styles: Record<string, SxProps<Theme>> = {
     textAlign: 'center',
     flexDirection: 'column',
     py: [10, 12, 12],
-    [theme.breakpoints.down('md')]: {
-      py: 50,
-    },
-    [theme.breakpoints.down('sm')]: {
-      pt: 10,
-      pb: 30,
-    },
+    // [theme.breakpoints.down('md')]: {
+    //   py: 50,
+    // },
+    // [theme.breakpoints.down('sm')]: {
+    //   pt: 10,
+    //   pb: 30,
+    // },
   },
   title: {
     mb: [2.5, 4, 8],
@@ -69,6 +69,17 @@ const styles: Record<string, SxProps<Theme>> = {
   },
   button: {
     width: 1,
+  },
+  carouselContainer: {
+    width: "100%",
+    px: 2,
+  },
+  carouselSlide: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 };
 

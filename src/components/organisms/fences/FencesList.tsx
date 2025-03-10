@@ -6,57 +6,75 @@ import {
   Grid,
   Theme,
   useMediaQuery,
+  Box,
 } from "@mui/material";
 import Image from "mui-image";
 import { FC, memo } from "react";
 import Text from "../../atoms/text/Text";
 import styles from "./styles";
+import FenceCard from "./FenceCard";
+import MySwiper from "/components/molecules/swiper/MySwiper";
 
 interface CardListItem {
   title: string;
   image: string;
 }
 
-const FencesList: FC<{ cards: CardListItem[] }> = memo(({ cards }) => {
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
+interface IFence {
+  id: number;
+  title: string;
+  image: string;
+  link: string;
+}
+
+interface FencesListProps {
+  items: IFence[];
+}
+
+const FencesList: FC<FencesListProps> = ({ items }) => {
+  const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
 
+  if (isMobile && items.length > 3) {
+    return (
+      <Box sx={styles.carouselContainer}>
+        <MySwiper
+          slidesToShow={1}
+          slidesToShowMob={1}
+          spaceBetween={20}
+          iconFill="#313131"
+          breakpoints={{
+            600: { slidesPerView: 1 },
+          }}
+        >
+          {items.map((item, index) => (
+            <Box key={`${item.id}-${index}`} sx={styles.carouselSlide}>
+              <FenceCard
+                title={item.title}
+                image={item.image}
+                link={item.link}
+              />
+            </Box>
+          ))}
+        </MySwiper>
+      </Box>
+    );
+  }
+
   return (
-    <Grid
-      container
-      spacing={{ xs: 2, lg: 4 }}
-      rowGap={4}
-      sx={styles.gridContainer}
-    >
-      {cards.map(({ title, image }) => (
-        <Grid key={title} item sm={12} md={6} lg={4}>
-          <Card sx={styles.card}>
-            <Image
-              alt={title}
-              src={image}
-              fit="scale-down"
-              easing="3000ms cubic-bezier(0.7, 0, 0.6, 1)"
-              style={{
-                maxWidth: !isSmallScreen ? "100%" : "270px",
-                maxHeight: "250px",
-              }}
-            />
-            <CardContent sx={{ p: isSmallScreen ? "10px" : "16px" }}>
-              <Text variant="h6" sx={styles.cardTitle}>
-                {title}
-              </Text>
-            </CardContent>
-            <CardActions sx={styles.actions}>
-              <Button size="small" sx={styles.button}>
-                Перейти в каталог
-              </Button>
-            </CardActions>
-          </Card>
+    <Grid container spacing={3}>
+      {items.map((item) => (
+        <Grid item xs={12} sm={6} md={4} key={item.id}>
+          <FenceCard
+            title={item.title}
+            image={item.image}
+            link={item.link}
+          />
         </Grid>
       ))}
     </Grid>
   );
-});
+};
 
 export default FencesList;

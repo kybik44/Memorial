@@ -5,6 +5,7 @@ const styles: Record<string, SxProps<Theme>> = {
   container: {
     position: 'relative',
     width: '100%',
+    height: '100%',
   },
   carouselContainer: {
     position: 'relative',
@@ -27,39 +28,42 @@ const styles: Record<string, SxProps<Theme>> = {
     position: 'absolute',
     top: '50%',
     transform: 'translateY(-50%)',
-    width: '64px',
-    height: '64px',
+    width: '40px',
+    height: '40px',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2, // Increase z-index to ensure visibility
+    zIndex: 2,
     cursor: 'pointer',
     transition: 'all 0.3s ease-out',
+    // backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: '50%',
     left: '0',
-    marginLeft: '-50px',
+    marginLeft: '-20px',
     [theme.breakpoints.down('md')]: {
-      marginLeft: '-8px',
+      width: '30px',
+      height: '30px',
+      marginLeft: '-15px',
     },
     '&:last-of-type': {
       left: 'auto',
       right: '0',
-      marginRight: '-50px',
+      marginRight: '-20px',
       [theme.breakpoints.down('md')]: {
-        marginRight: '-8px',
+        marginRight: '-15px',
       },
     },
     '& svg': {
       fill: '#fff',
-      width: '40px',
-      height: '40px',
+      width: '24px',
+      height: '24px',
       [theme.breakpoints.down('md')]: {
-        width: '24px',
-        height: '24px',
+        width: '20px',
+        height: '20px',
       },
-      '&:hover': {
-        fill: '#BCBCBC',
-        filter: 'drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4))',
-      },
+    },
+    '&:hover': {
+      // backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
   },
 };

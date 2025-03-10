@@ -1,56 +1,43 @@
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
-import { FC, useEffect, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { FC, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import MenuLink from "./MenuLink";
 import styles from "./styles";
 
 export interface CatalogMenuItem {
   title: string;
-  to?: string;
-  links?: Array<CatalogMenuItem>;
-  section?: string;
+  section: string;
+  links: { title: string; to: string }[];
 }
 
-interface ICatalogMenu {
-  linksList: Array<CatalogMenuItem>;
+interface CatalogMenuProps {
+  links?: CatalogMenuItem[];
 }
 
-const CatalogMenu: FC<ICatalogMenu> = ({ linksList }) => {
+const CatalogMenu: FC<CatalogMenuProps> = ({ links = [] }) => {
   const location = useLocation();
-  const navigate = useNavigate();
 
-  const handleMenuClick = (link: CatalogMenuItem) => {
-    if (link.to) {
-      navigate(`/catalog/${link.section}/${link.to}`);
-    }
-  };
+  const currentSection = useMemo(() => {
+    const paths = location.pathname.split("/").filter(Boolean);
+    return paths[1] || "";
+  }, [location]);
 
-  const firstLink = useMemo(
-    () => linksList.find((link) => link.to),
-    [linksList]
-  );
-
-  useEffect(() => {
-    const matchingLink = linksList.find(
-      (link) => link.to === location.pathname
-    );
-
-    if (!matchingLink && firstLink?.to) {
-      navigate(firstLink.to);
-    }
-  }, [location.pathname, linksList, navigate, firstLink]);
+  if (!links || links.length === 0) {
+    return null;
+  }
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Box sx={styles.menu} component="nav" aria-label="mailbox folders">
-        <List>
-          {linksList.map((link) => (
+    <Box sx={styles.container}>
+      <Box sx={styles.wrapper}>
+        <List sx={styles.list}>
+          {links.map((item) => (
             <MenuLink
-              key={link.title}
-              link={link}
-              handleClick={() => handleMenuClick(link)}
-              selected={link.to === location.pathname}
+              key={item.section}
+              title={item.title}
+              section={item.section}
+              links={item.links}
+              isActive={currentSection === item.section}
             />
           ))}
         </List>

@@ -1,67 +1,176 @@
-import { Box, Button, Grid, Theme, useMediaQuery } from "@mui/material";
-import { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  Grid,
+  Theme,
+  useMediaQuery,
+  CircularProgress,
+} from "@mui/material";
+import { useEffect, useState, useCallback, Suspense, memo } from "react";
 import MySwiper from "../swiper/MySwiper";
 import styles from "./styles";
-import { getCatalogDetails } from "/api/api";
+import { getItemDetails } from "/api/api";
 import blackArrow from "/assets/img/blackArrow.png";
 import Text from "/components/atoms/text/Text";
-import { catalogItemColors } from "/utils/mock";
+import { Item, MaterialItem } from "/api/types";
+import LazyImage from "/components/atoms/lazy-image/LazyImage";
+import { FC } from "react";
+import { SystemStyleObject } from "@mui/system/styleFunctionSx/styleFunctionSx";
 
-const CatalogItem = ({ productId }: { productId: string }) => {
-  const [item, setItem] = useState<any>(null);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+interface CatalogItemProps {
+  productId: string | number;
+}
+
+const CatalogItem: FC<CatalogItemProps> = ({ productId }) => {
+  const [item, setItem] = useState<Item | null>(null);
+  const [activeMaterial, setActiveMaterial] = useState<MaterialItem | null>(
+    null
+  );
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("lg")
   );
 
+  const itemId =
+    typeof productId === "string" ? parseInt(productId, 10) : productId;
+
   useEffect(() => {
     const fetchData = async () => {
-      const itemDetails = await getCatalogDetails(Number(productId));
-      setItem(itemDetails);
+      try {
+        setLoading(true);
+        const itemDetails = await getItemDetails(itemId);
+        if (itemDetails) {
+          setItem(itemDetails);
+          if (itemDetails.material_item.length > 0) {
+            setActiveMaterial(itemDetails.material_item[0]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching item details:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, [productId]);
+  }, [itemId]);
+
+  const handleMaterialChange = useCallback((material: MaterialItem) => {
+    setActiveMaterial(material);
+    setCurrentSlide(0);
+  }, []);
+
+  useEffect(() => {
+    if (
+      activeMaterial &&
+      currentSlide >= (activeMaterial.images?.length || 0)
+    ) {
+      setCurrentSlide(0);
+    }
+  }, [activeMaterial, currentSlide]);
+
+  // Предзагрузка изображений материала
+  useEffect(() => {
+    if (activeMaterial?.images) {
+      activeMaterial.images.forEach((img) => {
+        const image = new Image();
+        image.src = img.image;
+      });
+    }
+  }, [activeMaterial]);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   if (!item) {
-    return <Text variant="h5">Продукт не найден</Text>;
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "200px",
+        }}
+      >
+        <Text variant="h5">Продукт не найден</Text>
+      </Box>
+    );
   }
+
+  const getAllDescriptions = () => {
+    const mainDescriptions = item.main_description || [];
+    const materialDescriptions = activeMaterial?.main_description || [];
+    return [...mainDescriptions, ...materialDescriptions];
+  };
 
   return (
     <Box sx={styles.container}>
       <Box sx={styles.content}>
-        <Box sx={styles.sliderWrapper}>
-          <MySwiper
-            slidesToShow={1}
-            slidesToShowMob={1}
-            breakpoints={{
-              1920: { slidesPerView: 1 },
-            }}
-            sx={styles.slid}
-            showButtons={false}
-          >
-            {[item].map((item) => (
-              <Box key={item.id} sx={styles.imageContainer}>
-                <img
-                  alt={item.title}
-                  src={item.image}
-                  style={{ width: "100%", height: "auto", maxWidth: "400px" }}
-                />
-              </Box>
-            ))}
-          </MySwiper>
-        </Box>
+        <Suspense fallback={<CircularProgress />}>
+          <Box sx={styles.sliderWrapper}>
+            <MySwiper
+              slidesToShow={1}
+              slidesToShowMob={1}
+              breakpoints={{
+                1920: { slidesPerView: 1 },
+              }}
+              sx={styles.slid}
+              showButtons={true}
+              onSlideChange={setCurrentSlide}
+              loop={false}
+            >
+              {activeMaterial?.images?.map((img, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    ...styles.imageContainer,
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                    aspectRatio: "16/9",
+                  }}
+                >
+                  <LazyImage
+                    alt={`${item.title} - изображение ${index + 1}`}
+                    src={img.image}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      maxWidth: "400px",
+                      objectFit: "contain",
+                      aspectRatio: "16/9",
+                    }}
+                  />
+                </Box>
+              ))}
+            </MySwiper>
+          </Box>
+        </Suspense>
         {isMobile && (
           <Grid item sx={styles.colors}>
-            {catalogItemColors.map((color) => (
+            {item.material_item.map((material) => (
               <Box
-                key={color.name}
+                key={material.material.id}
                 component="img"
                 sx={styles.color}
-                alt={color.name}
-                src={color.image}
-                onClick={() => setActiveIndex(color.id)}
+                alt={material.material.title}
+                src={material.material.image}
+                onClick={() => handleMaterialChange(material)}
               />
             ))}
           </Grid>
@@ -80,35 +189,22 @@ const CatalogItem = ({ productId }: { productId: string }) => {
               src={blackArrow}
             />
           </Grid>
-          <Grid item sx={styles.infoItem}>
-            <Text variant="h4" sx={styles.subtitle}>
-              КОМПЛЕКТ
-            </Text>
-            <Text
-              variant="h5"
-              sx={{ ...styles.text, lineHeight: "25px" }}
-              multiline
-            >
-              стела:100 × 50 × 5 (см.)1 шт. подставка:50 × 20 × 15 (см.) 1 шт.
-              цветник: 100 × 5 × 8 (см.) 2 шт. цветник: 50 × 5 × 8е (см.) 1 шт.
-            </Text>
-          </Grid>
-          <Grid item sx={styles.infoItem}>
-            <Text variant="h4" sx={styles.subtitle}>
-              ВЕС КОМПЛЕКТА
-            </Text>
-            <Text variant="h5" sx={styles.text}>
-              150 кг
-            </Text>
-          </Grid>
-          <Grid item sx={styles.infoItem}>
-            <Text variant="h4" sx={styles.subtitle}>
-              МАТЕРИАЛ
-            </Text>
-            <Text variant="h5" sx={styles.text}>
-              Габро-Диабаз (Карелия, Россия)
-            </Text>
-          </Grid>
+
+          {getAllDescriptions().map((desc, index) => (
+            <Grid item key={`${desc.name}-${index}`} sx={styles.infoItem}>
+              <Text variant="h4" sx={styles.subtitle}>
+                {desc.name}
+              </Text>
+              <Text
+                variant="h5"
+                sx={{ ...styles.text, lineHeight: "25px" }}
+                multiline
+              >
+                {desc.value}
+              </Text>
+            </Grid>
+          ))}
+
           <Grid item sx={styles.infoItem}>
             <Box
               component="img"
@@ -117,6 +213,7 @@ const CatalogItem = ({ productId }: { productId: string }) => {
               src={blackArrow}
             />
           </Grid>
+
           <Grid item sx={styles.infoItem}>
             <Text
               variant="body1"
@@ -125,37 +222,43 @@ const CatalogItem = ({ productId }: { productId: string }) => {
               художественное оформление не включено в стоимость комплекта
             </Text>
           </Grid>
+
           <Grid item sx={styles.infoItem}>
-            <Text variant="h5">
-              Знаковый памятник модели В-1 из Габро-Диабаза представляет собой
-              уникальное сочетание прочности камня и эстетики его текстуры,
-              создавая вечный и красочный символ памяти.
+            <Text variant="h5" sx={{ whiteSpace: "pre-line" }}>
+              {item.description}
             </Text>
           </Grid>
+          <Grid item sx={styles.infoItem}>
+            <Text variant="h5" sx={{ whiteSpace: "pre-line" }}>
+              {activeMaterial?.material.description}
+            </Text>
+          </Grid>
+
           {!isMobile && (
             <Grid item sx={styles.colors}>
-              {catalogItemColors.map((color) => (
+              {item.material_item.map((material) => (
                 <Box
-                  key={color.name}
+                  key={material.material.id}
                   component="img"
                   sx={styles.color}
-                  alt={color.name}
-                  src={color.image}
-                  onClick={() => setActiveIndex(color.id)}
+                  alt={material.material.title}
+                  src={material.material.image}
+                  onClick={() => handleMaterialChange(material)}
                 />
               ))}
             </Grid>
           )}
           <Box sx={styles.priceBlock}>
             <Text variant="subtitle2" sx={styles.price}>
-              {item.price} бел. р
+              {activeMaterial?.price} бел. р
             </Text>
             <Text
               variant="body1"
               customColor="primary.dark"
               sx={styles.clarification}
             >
-              Для получения точной стоимости обратитесь к нашему менеджеру
+              {activeMaterial?.add_info ||
+                "Для получения точной стоимости обратитесь к нашему менеджеру"}
             </Text>
             <Button sx={styles.button}>Связаться с нами</Button>
           </Box>
@@ -165,4 +268,4 @@ const CatalogItem = ({ productId }: { productId: string }) => {
   );
 };
 
-export default CatalogItem;
+export default memo(CatalogItem);

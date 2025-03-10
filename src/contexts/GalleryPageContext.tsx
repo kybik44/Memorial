@@ -6,13 +6,15 @@ import React, {
   ReactNode,
 } from "react";
 import { getOurWorksList } from "/api/api";
-import { OurWorks } from "/api/types";
+import { OurWorks, OurWorksResponse } from "/api/types";
 
 interface GalleryPageContextType {
   ourWorks: OurWorks[];
   loading: boolean;
   error: string | null;
-  setOurWorks: (works: OurWorks[]) => void;
+  currentPage: number;
+  totalPages: number;
+  setCurrentPage: (page: number) => void;
 }
 
 const GalleryPageContext = createContext<GalleryPageContextType | undefined>(
@@ -24,32 +26,42 @@ export const GalleryPageProvider: React.FC<{
   initialWorks?: OurWorks[];
 }> = ({ children, initialWorks = [] }) => {
   const [ourWorks, setOurWorks] = useState<OurWorks[]>(initialWorks);
-  const [loading, setLoading] = useState<boolean>(initialWorks.length === 0);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchOurWorks = async () => {
-    if (initialWorks.length === 0) {
+  const fetchOurWorks = async (page: number) => {
+    try {
       setLoading(true);
-      try {
-        const result = await getOurWorksList();
-        if (result) {
-          setOurWorks(result);
-        }
-      } catch (error) {
-        setError("Error fetching our works.");
-      } finally {
-        setLoading(false);
+      const response = await getOurWorksList({ page }) as OurWorksResponse;
+
+      if (response) {
+        setOurWorks(response.results);
+        setTotalPages(Math.ceil(response.count / 20));
       }
+    } catch (error) {
+      console.error("Error fetching works:", error);
+      setError("Ошибка при загрузке галереи");
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchOurWorks();
-  }, []);
+    fetchOurWorks(currentPage);
+  }, [currentPage]);
 
   return (
     <GalleryPageContext.Provider
-      value={{ ourWorks, loading, error, setOurWorks }}
+      value={{
+        ourWorks,
+        loading,
+        error,
+        currentPage,
+        totalPages,
+        setCurrentPage,
+      }}
     >
       {children}
     </GalleryPageContext.Provider>

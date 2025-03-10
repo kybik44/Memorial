@@ -6,27 +6,38 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
+import { FC, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GalleryItem from "./GalleryItem";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 import ImageModal from "/components/molecules/ImageModal/ImageModal";
-import useGallery from "/hooks/useGallery";
 import { useGalleryPageContext } from "/contexts/GalleryPageContext";
 import { useMainPageContext } from "/contexts/MainPageContext";
-import { useEffect } from "react";
-import { api } from "/api/api";
+import useGallery from "/hooks/useGallery";
 
-const Gallery = ({ isMainPage = false }) => {
+interface GalleryProps {
+  isMainPage?: boolean;
+}
+
+const Gallery: FC<GalleryProps> = ({ isMainPage = false }) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
   const navigate = useNavigate();
 
-  const galleryContext = isMainPage
-    ? useMainPageContext()
-    : useGalleryPageContext();
-  const { ourWorks, loading, error } = galleryContext;
+  // Получаем данные из соответствующего контекста
+  const mainPageContext = isMainPage ? useMainPageContext() : null;
+  const galleryContext = isMainPage ? null : useGalleryPageContext();
+
+  // Используем данные в зависимости от страницы
+  const works = isMainPage
+    ? mainPageContext?.mainPageData?.our_works
+    : galleryContext?.ourWorks;
+  const loading = isMainPage
+    ? !mainPageContext?.mainPageData
+    : galleryContext?.loading;
+  const error = isMainPage ? mainPageContext?.error : galleryContext?.error;
 
   const {
     open,
@@ -40,11 +51,21 @@ const Gallery = ({ isMainPage = false }) => {
     handleClose,
   } = useGallery();
 
+  const sortedWorks = works?.length
+    ? [...works].sort(
+        (a, b) =>
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      )
+    : [];
+
+  const displayedWorks = isMainPage ? sortedWorks.slice(0, 10) : sortedWorks;
+
   useEffect(() => {
-    if (ourWorks.length > 0) {
-      setImages(ourWorks.map((work) => `${api.defaults.baseURL}${work.image}`));
+    if (works && works?.length > 0) {
+      const imageUrls = works.map((work) => work.image);
+      setImages(imageUrls);
     }
-  }, [ourWorks, setImages]);
+  }, [works, setImages]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -54,10 +75,8 @@ const Gallery = ({ isMainPage = false }) => {
     return <ErrorScreen message={error} />;
   }
 
-  const displayedWorks = isMainPage ? ourWorks.slice(0, 12) : ourWorks;
-
   const handleViewMore = () => {
-    navigate("/gallery");
+    navigate("/gallery", { state: { ourWorks: works } });
   };
 
   return (
@@ -78,10 +97,10 @@ const Gallery = ({ isMainPage = false }) => {
             rowHeight={!isSmallScreen ? 250 : 100}
             gap={!isSmallScreen ? 40 : 10}
           >
-            {displayedWorks.map((item, index) => (
+            {displayedWorks?.map((item, index) => (
               <GalleryItem
                 key={item.id}
-                item={{ id: item.id, img: item.image, title: "" }}
+                item={item}
                 onClick={handleImage}
                 index={index}
               />
@@ -115,7 +134,7 @@ const LoadingScreen = () => (
   </Box>
 );
 
-const ErrorScreen = ({ message }) => (
+const ErrorScreen = ({ message }: { message: string }) => (
   <Box sx={styles.container}>
     <Container maxWidth="xl" sx={styles.content}>
       <Text variant="h4" color="error">

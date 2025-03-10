@@ -1,5 +1,7 @@
+import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
 import PhoneIcon from "@mui/icons-material/Phone";
+import { IconButton, Theme, Typography } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
@@ -8,13 +10,12 @@ import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import React, { useState, FC, MouseEvent, KeyboardEvent } from "react";
+import { SystemStyleObject } from "@mui/system/styleFunctionSx/styleFunctionSx";
+import { FC, KeyboardEvent, MouseEvent, useState } from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import styles from "./styles";
 import logo from "/assets/img/logo.png";
 import Text from "/components/atoms/text/Text";
-import { Theme } from "@mui/material";
-import { Link as RouterLink, useNavigate, useLocation } from "react-router-dom";
-import CloseIcon from "@mui/icons-material/Close";
 
 const pages = [
   { name: "Виды гранита", href: "#granite" },
@@ -24,12 +25,6 @@ const pages = [
   { name: "Наши работы", href: "#gallery" },
   { name: "Контакты", href: "#map" },
 ];
-
-enum DropdownPages {
-  MONUMENTS = "Памятники",
-  DECOR = "Оформление и декор",
-  FENCES = "Благоустройство и ограды",
-}
 
 const Header: FC = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -95,10 +90,31 @@ const Header: FC = () => {
             anchor="right"
             open={open}
             onClose={toggleDrawer(false)}
-            PaperProps={{ sx: styles.drawer }}
+            keepMounted={false}
+            SlideProps={{
+              appear: true,
+              timeout: 300,
+            }}
+            sx={{
+              "& .MuiDrawer-paper": styles.drawer as SystemStyleObject<Theme>,
+            }}
           >
-            <CloseIcon sx={styles.close} onClick={toggleDrawer(false)} />
-            <Stack rowGap={3}>
+            <AppBar position="sticky" color="default" elevation={0}>
+              <Toolbar>
+                <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                  Меню
+                </Typography>
+                <IconButton
+                  edge="end"
+                  onClick={toggleDrawer(false)}
+                  aria-label="закрыть меню"
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Toolbar>
+            </AppBar>
+
+            <Stack spacing={3} sx={{ mt: 2 }}>
               <RouterLink
                 to={location.pathname === "/" ? "/catalog" : "/"}
                 onClick={handleClick}

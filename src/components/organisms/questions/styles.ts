@@ -59,11 +59,12 @@ const styles: Record<string, SxProps<Theme>> = {
   },
   gridContainer: {
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "flex-start",
     justifyContent: "flex-start",
     [theme.breakpoints.down('md')]: {
       alignItems: "flex-start",
       flexDirection: 'column',
+      rowGap: 3,
     },
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
@@ -78,8 +79,25 @@ const styles: Record<string, SxProps<Theme>> = {
   button: {
     p: 3,
     width: 1,
+    marginTop: "32px",
     [theme.breakpoints.down('sm')]: {
       mt: 2,
+    },
+    [theme.breakpoints.down('md')]: {
+      marginTop: 0,
+    },
+  },
+  inputWrapper: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  buttonWrapper: {
+    display: "flex",
+    alignItems: "flex-start",
+    height: "100%",
+    [theme.breakpoints.down("md")]: {
+      justifyContent: "center",
     },
   },
 };

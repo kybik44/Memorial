@@ -12,13 +12,12 @@ const Decor = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
-  const { decorCatalog, loadingCatalogs } = useMainPageContext();
+  const { decorCatalog, catalogSections } = useMainPageContext();
 
-  if (loadingCatalogs) {
-    return <Loading />;
-  }
-
-  if (!decorCatalog.length) return null;
+  // Находим секцию с carousel: true
+  const carouselSection = catalogSections.find(section => section.carousel);
+  
+  if (!decorCatalog.length || !carouselSection) return null;
 
   return (
     <Box sx={styles.container}>
@@ -37,7 +36,7 @@ const Decor = () => {
             customColor="text.secondary"
             sx={styles.title}
           >
-            Оформление и декор
+            {carouselSection.title}
           </Text>
           <Box sx={styles.arrowContainer}>
             <Box

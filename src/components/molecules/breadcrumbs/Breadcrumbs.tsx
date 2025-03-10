@@ -1,90 +1,147 @@
-import { Container } from "@mui/material";
-import Breadcrumbs from "@mui/material/Breadcrumbs";
-import { useLocation } from "react-router-dom";
+import { Box } from "@mui/material";
+import MuiBreadcrumbs from "@mui/material/Breadcrumbs";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import BreadcrumbsLink from "./BreadcrumbsLink";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
-import { useEffect, useState } from "react";
-import { getCatalogList } from "/api/api";
+import { useCatalogContext } from "/contexts/CatalogContext";
 
-interface RouteMap {
-  [key: string]: string;
+interface BreadcrumbItem {
+  title: string;
+  to: string;
 }
 
-const RouterBreadcrumbs = () => {
-  const location = useLocation();
-  const [routesNameMap, setRoutesNameMap] = useState<RouteMap>({
-    "/catalog": "Каталог",
-  });
+const Breadcrumbs = () => {
+  const { section, subsectionOrId, productId } = useParams();
+  const { getCurrentCategoryPath, catalogStructure, catalogs, fetchItems } =
+    useCatalogContext();
+  const navigate = useNavigate();
+  const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
+    { title: "Главная", to: "/" },
+    { title: "Каталог", to: "/catalog" },
+  ]);
+
+  const handleCatalogClick = () => {
+    fetchItems({ page: 1 });
+    navigate("/catalog");
+  };
 
   useEffect(() => {
-    const fetchCatalogList = async () => {
-      try {
-        const catalogList = await getCatalogList();
-        if (catalogList) {
-          const newRoutesNameMap: RouteMap = { "/catalog": "Каталог" };
-          const processCategory = (category) => {
-            const addCategoryToMap = (cat) => {
-              newRoutesNameMap[`/catalog/${cat.full_slug}`] = cat.title;
-              cat.children.forEach(addCategoryToMap);
-            };
-            addCategoryToMap(category);
-          };
-          catalogList.forEach(processCategory);
-          setRoutesNameMap(newRoutesNameMap);
+    const updateBreadcrumbs = async () => {
+      const newBreadcrumbs = [
+        { title: "Главная", to: "/" },
+        { title: "Каталог", to: "/catalog" },
+      ];
+
+      if (section) {
+        const categoryPath = getCurrentCategoryPath(section);
+
+        // Добавляем все категории из пути
+        categoryPath.forEach((category) => {
+          newBreadcrumbs.push({
+            title: category.title,
+            to: `/catalog/${category.full_slug}`,
+          });
+        });
+
+        // Проверяем подраздел
+        if (subsectionOrId && isNaN(Number(subsectionOrId))) {
+          const fullSlug = `${section}/${subsectionOrId}`;
+
+          const subcategory = catalogStructure[fullSlug];
+
+          if (subcategory) {
+            newBreadcrumbs.push({
+              title: subcategory.title,
+              to: `/catalog/${fullSlug}`,
+            });
+          }
         }
-      } catch (error) {
-        console.error("Error fetching catalog data:", error);
       }
+
+      if (productId) {
+        newBreadcrumbs.push({
+          title: "Товар",
+          to: "#",
+        });
+      }
+
+      console.log("Final breadcrumbs:", newBreadcrumbs);
+      setBreadcrumbs(newBreadcrumbs);
     };
 
-    fetchCatalogList();
-  }, []);
-
-  const pathnames = location.pathname.split("/").filter((x) => x);
-  const createBreadcrumbs = () =>
-    pathnames.map((value, index) => {
-      const last = index === pathnames.length - 1;
-      const to = `/${pathnames.slice(0, index + 1).join("/")}`;
-      const routeName = routesNameMap[to] || value;
-      return (
-        <span key={to} style={{ display: "flex", alignItems: "center" }}>
-          <Text variant="body1" customColor="text.secondary">
-            {" / "}
-          </Text>
-          {last ? (
-            <Text
-              variant="body1"
-              customColor="text.secondary"
-              fontWeight={700}
-              fontStyle="italic"
-              sx={styles.link}
-            >
-              {routeName}
-            </Text>
-          ) : (
-            <BreadcrumbsLink to={to} sx={styles.link}>
-              <Text variant="body1" customColor="text.secondary">
-                {routeName}
-              </Text>
-            </BreadcrumbsLink>
-          )}
-        </span>
-      );
-    });
+    updateBreadcrumbs();
+  }, [
+    section,
+    subsectionOrId,
+    productId,
+    getCurrentCategoryPath,
+    catalogStructure,
+    catalogs,
+    fetchItems,
+    navigate,
+  ]);
 
   return (
-    <Breadcrumbs aria-label="breadcrumb" sx={styles.container}>
-      <Container maxWidth="xl" sx={styles.content}>
-        <BreadcrumbsLink to="/" sx={styles.link}>
-          <Text variant="body1" customColor="text.secondary">
-            Главная
-          </Text>
-        </BreadcrumbsLink>
-        {createBreadcrumbs()}
-      </Container>
-    </Breadcrumbs>
+    <Box sx={styles.wrapper}>
+      <Box sx={styles.container}>
+        <MuiBreadcrumbs
+          separator="›"
+          aria-label="breadcrumb"
+          sx={{
+            "& .MuiBreadcrumbs-separator": {
+              color: "text.secondary",
+              margin: "0 8px",
+              fontSize: "16px",
+            },
+            "& .MuiBreadcrumbs-ol": {
+              flexWrap: "nowrap",
+              whiteSpace: "nowrap",
+              overflow: "auto",
+              msOverflowStyle: "none",
+              scrollbarWidth: "none",
+              "&::-webkit-scrollbar": {
+                display: "none",
+              },
+            },
+          }}
+        >
+          {breadcrumbs.map((item, index) => {
+            const isLast = index === breadcrumbs.length - 1;
+            const isCatalog = item.to === "/catalog";
+
+            return (
+              <span key={item.to}>
+                {isLast ? (
+                  <Text
+                    variant="body1"
+                    customColor="text.primary"
+                    sx={{
+                      ...styles.link,
+                      ...styles.last,
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                ) : (
+                  <BreadcrumbsLink
+                    to={item.to}
+                    sx={styles.link}
+                    onClick={isCatalog ? handleCatalogClick : undefined}
+                  >
+                    <Text variant="body1" customColor="text.secondary">
+                      {item.title}
+                    </Text>
+                  </BreadcrumbsLink>
+                )}
+              </span>
+            );
+          })}
+        </MuiBreadcrumbs>
+      </Box>
+    </Box>
   );
 };
 
-export default RouterBreadcrumbs;
+export default Breadcrumbs;

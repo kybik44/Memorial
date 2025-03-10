@@ -33,7 +33,7 @@ const styles: Record<string, SxProps<Theme>> = {
     [theme.breakpoints.down('sm')]: {
       gap: 1,
       p: 1.5,
-      minHeight: "260px",
+      // minHeight: "260px",
     },
   },
   image: {
@@ -79,10 +79,20 @@ const styles: Record<string, SxProps<Theme>> = {
   button: {
     maxWidth: '170px',
     mt: 1,
+    [theme.breakpoints.down('lg')]: {
+      maxWidth: '120x',
+      p: '6px 8px',
+      fontSize: '12px',
+      fontWeight: '600',
+    },
+
     [theme.breakpoints.down('sm')]: {
       maxWidth: '84px',
-      p: '10px 8px',
+      p: '0px 8px',
+      fontSize: '10px',
+      fontWeight: '600',
     },
+
     '& > a': {
       textDecoration: 'none',
       fontSize: '15px',

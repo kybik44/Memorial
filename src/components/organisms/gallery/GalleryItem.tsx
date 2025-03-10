@@ -1,36 +1,41 @@
 import { ImageListItem } from "@mui/material";
 import styles from "./styles";
 import { FC } from "react";
-import { api } from "/api/api";
-
-export interface GalleryItemProps {
-  id: number;
-  img: string;
-  title: string;
-  rows?: number;
-  cols?: number;
-}
+import { OurWorks } from "/api/types";
 
 const GalleryItem: FC<{
-  item: GalleryItemProps;
+  item: OurWorks;
   onClick: (index: number) => void;
   index: number;
 }> = ({ item, onClick, index }) => {
-  const { img, title, rows = 1, cols = 1 } = item;
-  const size = 250;
-  const imageSrc = `${api.defaults.baseURL}${img}`;
-  const src = `${imageSrc}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format`;
-  const srcSet = `${imageSrc}?w=${size * cols}&h=${size * rows}&fit=crop&auto=format&dpr=2 2x`;
+  const { image, cropping } = item;
+
+  // Парсим параметры кропа
+  const [x, y, width, height] = cropping ? cropping.split(',').map(Number) : [0, 0, 0, 0];
+
+  // Определяем размеры на основе кропа
+  const isVertical = height > width;
+  const rows = isVertical ? 2 : 1;
+  const cols = isVertical ? 1 : 2;
 
   return (
-    <ImageListItem cols={cols} rows={rows} sx={styles.listItem}>
+    <ImageListItem 
+      cols={cols} 
+      rows={rows} 
+      sx={styles.listItem}
+    >
       <img
-        src={src}
-        srcSet={srcSet}
-        alt={title}
+        src={image}
+        srcSet={`${image} 2x`}
+        alt="Наша работа"
         loading="lazy"
         onClick={() => onClick(index)}
-        style={{ cursor: "pointer" }}
+        style={{ 
+          cursor: "pointer",
+          objectFit: "cover",
+          width: "100%",
+          height: "100%"
+        }}
       />
     </ImageListItem>
   );

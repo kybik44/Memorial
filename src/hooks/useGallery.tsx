@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { OurWorks } from "/api/types";
 
-const useGallery = (initialImages: string[] = []) => {
+const useGallery = (initialImages: OurWorks[] = []) => {
   const [open, setOpen] = useState<boolean>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
-  const [images, setImages] = useState<string[]>(initialImages);
+  const [images, setImages] = useState<string[]>([]);
   const imageCache = useRef<Map<string, boolean>>(new Map());
 
   const preloadImage = (src: string) => {
@@ -35,6 +36,12 @@ const useGallery = (initialImages: string[] = []) => {
       preloadImage(images[(currentImageIndex + 1) % images.length]);
     }
   }, [currentImageIndex, images]);
+
+  useEffect(() => {
+    if (initialImages.length > 0) {
+      setImages(initialImages.map((work) => work.image));
+    }
+  }, [initialImages]);
 
   const handleImage = (index: number) => {
     setCurrentImageIndex(index);

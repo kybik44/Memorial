@@ -1,48 +1,63 @@
-import { SxProps, Theme } from '@mui/material/styles';
-import { theme } from '/core/theme';
+import { SxProps, Theme } from "@mui/material/styles";
+import { theme } from "/core/theme";
 
 const styles: Record<string, SxProps<Theme>> = {
   container: {
-    py: 1,
+    backgroundColor: "white",
+    boxShadow: "none",
+    borderBottom: "1px solid",
+    borderColor: "divider",
   },
   drawer: {
-    width: '80vw',
-    p: '80px 20px',
+    width: {
+      xs: "85%",
+      sm: "360px",
+    },
+    maxWidth: "360px",
+    height: "100%",
+    boxSizing: "border-box",
+    padding: "20px",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
   },
   links: {
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
   },
   navItem: {
-    display: 'flex',
+    display: "flex",
     p: 0,
     mr: 2,
-    textTransform: 'uppercase',
-    cursor: 'pointer',
-    [theme.breakpoints.down('sm')]: {
-      maxWidth: '280px',
+    textTransform: "uppercase",
+    cursor: "pointer",
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: "280px",
     },
   },
   linkText: {
     textTransform: "uppercase",
-    marginRight: 1,
-    [theme.breakpoints.down('md')]: {
-      fontSize: '20px',
-      lineHeight: '20px',
-      maxWidth: '280px',
+    transition: "color 0.2s ease",
+    "&:hover": {
+      color: "primary.main",
     },
   },
   phone: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-    textDecoration: 'none',
-    cursor: 'pointer',
+    display: "flex",
+    alignItems: "center",
+    textDecoration: "none",
+    color: "inherit",
+    transition: "color 0.2s ease",
+    "&:hover": {
+      color: "primary.main",
+    },
   },
   close: {
-    position: 'absolute',
-    top: '20px',
-    right: '25px'
-  }
+    alignSelf: "flex-end",
+    cursor: "pointer",
+    "&:hover": {
+      opacity: 0.7,
+    },
+  },
 };
 
 export default styles;

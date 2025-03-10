@@ -1,21 +1,40 @@
+import { Box } from "@mui/material";
+import { SxProps, Theme } from "@mui/material/styles";
+import { FC, ReactNode } from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { styled } from "@mui/material/styles";
-import { LinkProps } from "@mui/material/Link";
 
-interface BreadcrumbsLinkProps extends LinkProps {
+interface BreadcrumbsLinkProps {
   to: string;
-  replace?: boolean;
+  children: ReactNode;
+  sx?: SxProps<Theme>;
+  onClick?: () => void;
 }
 
-const BreadcrumbsLink = styled(RouterLink)<BreadcrumbsLinkProps>(
-  ({ theme }) => ({
-    color: theme.palette.text.primary,
-    textDecoration: "none",
-    cursor: "pointer",
-    "&:hover": {
-      textDecoration: "underline",
-    },
-  })
-);
+const BreadcrumbsLink: FC<BreadcrumbsLinkProps> = ({
+  to,
+  children,
+  sx,
+  onClick,
+}) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
+
+  return (
+    <RouterLink
+      to={to}
+      style={{
+        textDecoration: "none",
+        color: "inherit",
+      }}
+      onClick={handleClick}
+    >
+      <Box sx={sx}>{children}</Box>
+    </RouterLink>
+  );
+};
 
 export default BreadcrumbsLink;

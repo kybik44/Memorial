@@ -8,13 +8,13 @@ import Loading from "/components/atoms/loading/Loading";
 const Kinds = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-  const { kindsCatalog, loadingCatalogs } = useMainPageContext();
+  const { kindsCatalog, catalogSections } = useMainPageContext();
 
-  if (loadingCatalogs) {
-    return <Loading />;
-  }
+  const kindsSection = catalogSections.find(
+    (section) => section.position === 1
+  );
 
-  if (!kindsCatalog.length) return null;
+  if (!kindsCatalog.length || !kindsSection) return null;
 
   return (
     <Box sx={styles.container}>
@@ -25,12 +25,13 @@ const Kinds = () => {
           customColor="text.secondary"
           sx={styles.title}
         >
-          Виды памятников,{"\n"} которые мы изготавливаем
+          {kindsSection.title}
         </Text>
         <KindsList
           cards={kindsCatalog.map((item) => ({
             title: item.title,
             image: item.image || "",
+            slug: item.full_slug,
           }))}
         />
       </Container>

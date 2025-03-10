@@ -36,17 +36,23 @@ const styles: Record<string, SxProps<Theme>> = {
     rowGap: { xs: 2, sm: 2.5 },
   },
   sliderWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    mr: 2,
-    height: 1,
-    width: 1,
-    maxWidth: '450px',
+    width: '100%',
+    maxWidth: '600px',
+    margin: '0 auto',
+    position: 'relative',
+    // height: '400px',
+    padding: '0 60px',
+    [theme.breakpoints.down('md')]: {
+      padding: '0 30px',
+    },
   },
   imageContainer: {
+    width: '100%',
+    height: '100%',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    padding: '20px',
   },
   title: {
     fontSize: '30px',
@@ -60,15 +66,14 @@ const styles: Record<string, SxProps<Theme>> = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+    gap: { xs: 1, sm: 2 },
   },
   subtitle: {
-    width: 1,
-    maxWidth: '200px',
-    mr: 2,
+    width: '300px',
+    fontWeight: 700,
     [theme.breakpoints.down('sm')]: {
-      fontWeight: '700',
-      fontSize: '10px',
-      lineHeight: '10px',
+      fontSize: '12px',
+      lineHeight: '14px',
     },
   },
   text: {
@@ -127,6 +132,14 @@ const styles: Record<string, SxProps<Theme>> = {
     maxWidth: '300px',
     [theme.breakpoints.down('sm')]: {
       maxWidth: '124px',
+    },
+  },
+  slid: {
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+    '& .MuiBox-root': {
+      height: '100%',
     },
   },
 };

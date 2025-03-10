@@ -1,67 +1,70 @@
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Collapse, List, SxProps, Theme } from "@mui/material";
-import { FC, memo, useMemo, useState } from "react";
+import { Collapse, List } from "@mui/material";
+import { FC, memo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CatalogMenuItem } from "./CatalogMenu";
 import ListLink from "./ListLink";
+import styles from "./styles";
+import { useCatalogContext } from "../../../contexts/CatalogContext";
 
-export interface MenuLinkProps {
-  link: CatalogMenuItem;
-  handleClick: () => void;
-  selected: boolean;
-  sx?: SxProps<Theme>;
+interface MenuLinkProps {
+  title: string;
+  section: string;
+  links: { title: string; to: string }[];
+  isActive: boolean;
+  onClose?: () => void;
 }
 
 const MenuLink: FC<MenuLinkProps> = memo(
-  ({ link, handleClick, selected, sx }) => {
+  ({ title, section, links, isActive, onClose }) => {
     const navigate = useNavigate();
-    const [open, setOpen] = useState(false);
-    const { links, title, section } = link;
+    const { fetchItems } = useCatalogContext();
+    const [open, setOpen] = useState(isActive);
 
-    const handleOpen = () => {
-      setOpen((prevOpen) => !prevOpen);
+    useEffect(() => {
+      if (isActive) {
+        setOpen(true);
+      }
+    }, [isActive]);
+
+    const handleCategoryClick = async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      await fetchItems({ slug: section });
+      navigate(`/catalog/${section}`);
+      onClose?.();
     };
 
-    const handleClickInternal = useMemo(
-      () => (name?: string) => {
-        if (section && name) {
-          navigate(`/catalog/${section}/${name}`);
-        }
-        handleClick();
-      },
-      [navigate, section, handleClick]
-    );
+    const handleSubLinkClick = async (to: string) => {
+      if (to && to !== "undefined") {
+        await fetchItems({ slug: `${section}/${to}` });
+        navigate(`/catalog/${section}/${to}`);
+      }
+    };
 
-    const icon = useMemo(
-      () => (links?.length ? open ? <ExpandLess /> : <ExpandMore /> : null),
-      [links, open]
-    );
+    const icon = links?.length ? open ? <ExpandLess /> : <ExpandMore /> : null;
 
     return (
       <>
         <ListLink
           title={title}
           icon={icon}
-          sx={Array.isArray(sx) ? sx : [sx]}
-          onClick={handleOpen}
+          onClick={handleCategoryClick}
+          isActive={isActive}
         />
-        {links && (
+        {links && links.length > 0 && (
           <Collapse in={open} timeout="auto" unmountOnExit>
-            <List disablePadding>
-              {links.map((link) =>
-                link.to ? (
-                  <ListLink
-                    key={link.to}
-                    sx={{
-                      backgroundColor: selected ? "#605E5E" : "#838383",
-                    }}
-                    color="text.secondary"
-                    onClick={() => handleClickInternal(link.to)}
-                    title={link.title}
-                  />
-                ) : null
-              )}
+            <List sx={styles.nestedList} disablePadding>
+              {links.map((link) => (
+                <ListLink
+                  key={link.to}
+                  title={link.title}
+                  onClick={(e: any) => {
+                    e.stopPropagation();
+                    handleSubLinkClick(link.to);
+                  }}
+                  isNested
+                />
+              ))}
             </List>
           </Collapse>
         )}
@@ -69,5 +72,7 @@ const MenuLink: FC<MenuLinkProps> = memo(
     );
   }
 );
+
+MenuLink.displayName = "MenuLink";
 
 export default MenuLink;

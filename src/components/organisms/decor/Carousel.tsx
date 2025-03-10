@@ -35,21 +35,32 @@ const Carousel = ({ items }: CarouselProps) => {
           600: { slidesPerView: 1 },
         }}
       >
-        {items.map((item) => (
-          <Stack
-            key={item.id}
-            direction={"column"}
-            spacing={2}
-            sx={styles.card}
-          >
-            <Box sx={styles.image}>
-              <Image
-                alt={item.title}
-                src={item.image}
-                easing="3000ms cubic-bezier(0.7, 0, 0.6, 1)"
-                errorIcon
-                fit="contain"
-              />
+        {items.map((item, index) => (
+          <Stack key={`${item.id}-${index}`} direction="column" sx={styles.card}>
+            <Box sx={styles.imageContainer}>
+              <Box sx={styles.imageWrapper}>
+                <Image
+                  alt={item.title}
+                  src={item.image}
+                  duration={300}
+                  errorIcon
+                  fit="contain"
+                  showLoading={false}
+                  style={{
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    width: "auto",
+                    height: "auto",
+                  }}
+                  wrapperStyle={{
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                />
+              </Box>
             </Box>
             <Box sx={styles.cardFooter}>
               <Text variant="h6" sx={styles.cardTitle}>

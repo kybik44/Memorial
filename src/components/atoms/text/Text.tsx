@@ -1,6 +1,7 @@
 import Box from "@mui/material/Box";
-import Typography, { TypographyProps } from "@mui/material/Typography";
+import MuiTypography, { TypographyProps } from "@mui/material/Typography";
 import { SxProps, Theme } from "@mui/material/styles";
+import { SystemStyleObject } from "@mui/system";
 import { ElementType, FC, useMemo } from "react";
 import { getFontSizes } from "/utils/responsible";
 
@@ -18,15 +19,14 @@ export type TextVariants =
 
 type FontWeight = 300 | 400 | 500 | 600 | 700;
 
-export interface TextProps extends Omit<TypographyProps, "variant"> {
+export interface CustomTextProps extends Omit<TypographyProps, "variant"> {
   variant?: TextVariants;
   className?: string;
   fontWeight?: FontWeight;
   customColor?: string;
-  sx?: SxProps<Theme>;
+  sx?: SystemStyleObject<Theme> | SxProps<Theme>;
   multiline?: boolean;
   color?: string;
-  [otherProps: string]: unknown;
 }
 
 const variantMap: Record<TextVariants, TypographyProps["variant"]> = {
@@ -55,7 +55,7 @@ const variantMapping: Record<TextVariants, string> = {
   body2: "div",
 };
 
-const boxSettings: Record<TextVariants, Partial<IBoxSetting>> = {
+const boxSettings: Record<TextVariants, Partial<BoxSetting>> = {
   h1: {},
   h2: {},
   h3: {},
@@ -68,13 +68,13 @@ const boxSettings: Record<TextVariants, Partial<IBoxSetting>> = {
   body2: {},
 };
 
-interface IBoxSetting {
+interface BoxSetting {
   fontWeight?: FontWeight;
   color?: string;
-  component?: ElementType<unknown>;
+  component?: ElementType;
 }
 
-const Text: FC<TextProps> = ({
+const Text: FC<CustomTextProps> = ({
   children,
   variant = "h5",
   className,
@@ -88,7 +88,7 @@ const Text: FC<TextProps> = ({
   const mappedVariant = variantMap[variant];
   const { adjustedFontSize, adjustedLineHeight } = getFontSizes(variant);
 
-  const boxProps = useMemo<IBoxSetting>(() => {
+  const boxProps = useMemo<BoxSetting>(() => {
     const baseProps = boxSettings[variant] || {};
     const mergedProps = {
       ...baseProps,
@@ -99,7 +99,7 @@ const Text: FC<TextProps> = ({
   }, [variant, customColor, fontWeight]);
 
   return (
-    <Typography
+    <MuiTypography
       sx={{
         fontSize: adjustedFontSize,
         lineHeight: adjustedLineHeight,
@@ -107,6 +107,7 @@ const Text: FC<TextProps> = ({
       }}
       variant={mappedVariant}
       variantMapping={variantMapping}
+      className={className}
       {...otherProps}
     >
       <Box
@@ -117,7 +118,7 @@ const Text: FC<TextProps> = ({
       >
         {children}
       </Box>
-    </Typography>
+    </MuiTypography>
   );
 };
 
