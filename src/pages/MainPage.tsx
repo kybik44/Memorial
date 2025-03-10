@@ -1,9 +1,6 @@
+import { Box, Typography } from "@mui/material";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  MainPageProvider,
-  useMainPageContext,
-} from "/contexts/MainPageContext"; // Import the provider
 import Advantages from "../components/organisms/advantages/Advantages";
 import Decor from "../components/organisms/decor/Decor";
 import Description from "../components/organisms/description/Description";
@@ -14,12 +11,14 @@ import Head from "../components/organisms/head/Head";
 import Kinds from "../components/organisms/kinds/Kinds";
 import Map from "../components/organisms/map/Map";
 import Questions from "../components/organisms/questions/Questions";
-import { Box, Typography, CircularProgress } from "@mui/material";
+import {
+  MainPageProvider,
+  useMainPageContext,
+} from "/contexts/MainPageContext";
 
 const MainPage = () => {
   const location = useLocation();
 
-  // This useEffect is used for handling scroll to specific component
   useEffect(() => {
     if (location.state && location.state.scrollTo) {
       const anchor = document.querySelector(location.state.scrollTo);
@@ -29,7 +28,6 @@ const MainPage = () => {
     }
   }, [location]);
 
-  // The MainPageProvider wraps only the MainPage related components
   return (
     <MainPageProvider>
       <MainContent />
@@ -38,7 +36,7 @@ const MainPage = () => {
 };
 
 const MainContent = () => {
-  const { mainPageData, loading, error } = useMainPageContext(); // Now using the context within the main content component.
+  const { mainPageData, loading, error } = useMainPageContext();
 
   if (loading) {
     return (
@@ -46,9 +44,13 @@ const MainContent = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        height="100vh"
+        flexDirection="column"
+        height="70vh"
+        py={8}
       >
-        <CircularProgress />
+        <Typography variant="h3" mb={4}>
+          Загрузка...
+        </Typography>
       </Box>
     );
   }

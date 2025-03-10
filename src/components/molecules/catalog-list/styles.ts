@@ -36,6 +36,17 @@ const styles: Record<string, SxProps<Theme>> = {
       // minHeight: "260px",
     },
   },
+  imageWrapper: {
+    width: '100%',
+    height: '200px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    aspectRatio: '1/1',
+    [theme.breakpoints.down('sm')]: {
+      height: '150px',
+    },
+  },
   image: {
     maxHeight: '280px',
     m: 'auto 0',

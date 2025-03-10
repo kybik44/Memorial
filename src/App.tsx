@@ -12,6 +12,7 @@ import MainPage from "./pages/MainPage";
 import Footer from "./components/molecules/footer/Footer";
 import GalleryPage from "./pages/GalleryPage";
 import { useEffect } from 'react';
+import PageTransition from "./components/animations/PageTransition";
 
 function App() {
   useEffect(() => {
@@ -41,15 +42,17 @@ function App() {
         <CssBaseline />
         <BrowserRouter basename="/">
           <Header />
-          <Routes>
-            <Route path="/" element={<MainPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/catalog" element={<CatalogPage />} />
-            <Route path="/catalog/:section" element={<CatalogPage />} />
-            <Route path="/catalog/:section/:subsectionOrId" element={<CatalogPage />} />
-            <Route path="/catalog/:section/:subsection/:productId" element={<CatalogPage />} />
-            <Route path="/catalog/*" element={<Navigate to="/catalog" replace />} />
-          </Routes>
+          <PageTransition>
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/gallery" element={<GalleryPage />} />
+              <Route path="/catalog" element={<CatalogPage />} />
+              <Route path="/catalog/:section" element={<CatalogPage />} />
+              <Route path="/catalog/:section/:subsectionOrId" element={<CatalogPage />} />
+              <Route path="/catalog/:section/:subsection/:productId" element={<CatalogPage />} />
+              <Route path="/catalog/*" element={<Navigate to="/catalog" replace />} />
+            </Routes>
+          </PageTransition>
           <Footer />
         </BrowserRouter>
       </ThemeProvider>

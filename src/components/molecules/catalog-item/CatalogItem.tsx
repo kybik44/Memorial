@@ -36,26 +36,29 @@ const CatalogItem: FC<CatalogItemProps> = ({ productId }) => {
   const itemId =
     typeof productId === "string" ? parseInt(productId, 10) : productId;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const itemDetails = await getItemDetails(itemId);
-        if (itemDetails) {
-          setItem(itemDetails);
-          if (itemDetails.material_item.length > 0) {
-            setActiveMaterial(itemDetails.material_item[0]);
-          }
+  const fetchData = useCallback(async (id: number) => {
+    try {
+      setLoading(true);
+      const itemDetails = await getItemDetails(id);
+      if (itemDetails) {
+        setItem(itemDetails);
+        if (itemDetails.material_item.length > 0) {
+          setActiveMaterial(itemDetails.material_item[0]);
         }
-      } catch (error) {
-        console.error("Error fetching item details:", error);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching item details:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    fetchData();
-  }, [itemId]);
+  // Загружаем данные при изменении productId
+  useEffect(() => {
+    if (itemId) {
+      fetchData(itemId);
+    }
+  }, [itemId, fetchData]);
 
   const handleMaterialChange = useCallback((material: MaterialItem) => {
     setActiveMaterial(material);
@@ -88,7 +91,8 @@ const CatalogItem: FC<CatalogItemProps> = ({ productId }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "200px",
+          minHeight: "400px",
+          width: "100%",
         }}
       >
         <CircularProgress />
@@ -103,7 +107,11 @@ const CatalogItem: FC<CatalogItemProps> = ({ productId }) => {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "200px",
+          minHeight: "400px",
+          width: "100%",
+          backgroundColor: "background.paper",
+          borderRadius: 2,
+          boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
         }}
       >
         <Text variant="h5">Продукт не найден</Text>

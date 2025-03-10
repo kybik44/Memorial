@@ -12,7 +12,8 @@ import {
   useTheme,
 } from "@mui/material";
 import { SystemStyleObject } from "@mui/system/styleFunctionSx/styleFunctionSx";
-import { FC, useRef, useState } from "react";
+import { FC, useRef, useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import headerStyles from "../header/styles";
 import { CatalogMenuItem } from "./CatalogMenu";
 import MenuLink from "./MenuLink";
@@ -25,6 +26,33 @@ const MobileCatalogMenu: FC<MobileCatalogMenuProps> = ({ links }) => {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useTheme();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const location = useLocation();
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
+
+  // Определяем текущую секцию на основе пути
+  const currentSection = useMemo(() => {
+    const paths = currentPath.split("/").filter(Boolean);
+    return paths[1] || "";
+  }, [currentPath]);
+
+  // Обновляем текущий путь при изменении URL
+  useEffect(() => {
+    const handleUrlChanged = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+
+    window.addEventListener('urlChanged', handleUrlChanged as EventListener);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('urlChanged', handleUrlChanged as EventListener);
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
 
   const toggleDrawer =
     (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -77,6 +105,7 @@ const MobileCatalogMenu: FC<MobileCatalogMenuProps> = ({ links }) => {
         SlideProps={{
           appear: true,
           timeout: 300,
+          easing: "cubic-bezier(0.22, 1, 0.36, 1)"
         }}
         sx={{
           "& .MuiDrawer-paper": headerStyles.drawer as SystemStyleObject<Theme>,
@@ -113,7 +142,7 @@ const MobileCatalogMenu: FC<MobileCatalogMenuProps> = ({ links }) => {
                 title={item.title}
                 section={item.section}
                 links={item.links}
-                isActive={false}
+                isActive={currentSection === item.section}
                 onClose={handleClose}
               />
             ))}

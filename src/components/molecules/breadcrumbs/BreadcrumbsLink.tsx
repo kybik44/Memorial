@@ -7,7 +7,7 @@ interface BreadcrumbsLinkProps {
   to: string;
   children: ReactNode;
   sx?: SxProps<Theme>;
-  onClick?: () => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const BreadcrumbsLink: FC<BreadcrumbsLinkProps> = ({
@@ -17,23 +17,34 @@ const BreadcrumbsLink: FC<BreadcrumbsLinkProps> = ({
   onClick,
 }) => {
   const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
     if (onClick) {
-      e.preventDefault();
-      onClick();
+      onClick(e);
+    } else if (to && to !== '#') {
+      // Обновляем URL без перезагрузки страницы и без добавления в историю
+      window.history.replaceState({ path: to }, '', to);
+      
+      // Вручную запускаем обновление содержимого
+      const event = new CustomEvent('urlChanged', { detail: { path: to } });
+      window.dispatchEvent(event);
     }
   };
 
   return (
-    <RouterLink
-      to={to}
-      style={{
+    <Box
+      component="a"
+      href={to}
+      sx={{
+        ...sx,
         textDecoration: "none",
         color: "inherit",
+        cursor: "pointer",
       }}
       onClick={handleClick}
     >
-      <Box sx={sx}>{children}</Box>
-    </RouterLink>
+      {children}
+    </Box>
   );
 };
 

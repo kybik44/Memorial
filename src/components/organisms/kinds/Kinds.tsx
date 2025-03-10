@@ -4,6 +4,7 @@ import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 import { useMainPageContext } from "/contexts/MainPageContext";
 import Loading from "/components/atoms/loading/Loading";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 const Kinds = () => {
   const theme = useTheme();
@@ -24,16 +25,21 @@ const Kinds = () => {
           multiline
           customColor="text.secondary"
           sx={styles.title}
+          animated
+          animationType="fadeIn"
+          delay={0.1}
         >
           {kindsSection.title}
         </Text>
-        <KindsList
-          cards={kindsCatalog.map((item) => ({
-            title: item.title,
-            image: item.image || "",
-            slug: item.full_slug,
-          }))}
-        />
+        <FadeInWhenVisible delay={0.2} direction="left">
+          <KindsList
+            cards={kindsCatalog.map((item) => ({
+              title: item.title,
+              image: item.image || "",
+              slug: item.full_slug,
+            }))}
+          />
+        </FadeInWhenVisible>
       </Container>
     </Box>
   );

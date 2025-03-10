@@ -1,6 +1,6 @@
-import { Box, CircularProgress, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { Theme } from "@mui/material/styles";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import catalogBg from "../assets/img/catalogBg.png";
 import CustomPagination from "../components/atoms/pagination/CustomPagination";
@@ -14,6 +14,9 @@ import MobileCatalogMenu from "../components/molecules/catalog-menu/MobileCatalo
 import { theme } from "../core/theme";
 import Text from "/components/atoms/text/Text";
 import { CatalogProvider, useCatalogContext } from "/contexts/CatalogContext";
+import FadeInWhenVisible from "../components/animations/FadeInWhenVisible";
+import AnimatedText from "../components/animations/AnimatedText";
+import { motion, AnimatePresence } from "framer-motion";
 
 const styles = {
   container: {
@@ -31,6 +34,7 @@ const styles = {
     display: "flex",
     justifyContent: "flex-start",
     gap: "20px",
+    position: "relative",
   },
 };
 
@@ -43,7 +47,6 @@ const CatalogPage = () => {
 };
 
 const CatalogPageContent = () => {
-  const { subsectionOrId, productId } = useParams();
   const {
     catalogs,
     currentItems: items,
@@ -53,18 +56,88 @@ const CatalogPageContent = () => {
     totalPages,
     setCurrentPage,
     fetchCatalogList,
+    fetchItems,
   } = useCatalogContext();
 
   const [linksList, setLinksList] = useState<CatalogMenuItem[]>([]);
+  const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("md")
   );
+
+  // Получаем параметры из текущего пути
+  const getPathParams = useCallback(() => {
+    const pathParts = currentPath.split("/").filter(Boolean);
+    if (pathParts[0] === "catalog") {
+      // Определяем, является ли последняя часть пути числом (ID товара)
+      const lastPart = pathParts[pathParts.length - 1];
+      const isLastPartNumeric = !isNaN(Number(lastPart));
+
+      // Если последняя часть - число, это ID товара
+      if (isLastPartNumeric) {
+        // Для вложенных категорий (например, /catalog/pamyatniki/dvojnye-pamyatniki/111)
+        if (pathParts.length > 3) {
+          return {
+            section: pathParts[1],
+            subsectionOrId: pathParts[2],
+            productId: lastPart,
+            isProduct: true,
+          };
+        }
+        // Для категорий первого уровня (например, /catalog/pamyatniki/111)
+        else if (pathParts.length === 3) {
+          return {
+            section: pathParts[1],
+            subsectionOrId: lastPart,
+            productId: undefined,
+            isProduct: true,
+          };
+        }
+        // Для корневого каталога (например, /catalog/111)
+        else if (pathParts.length === 2) {
+          return {
+            section: undefined,
+            subsectionOrId: lastPart,
+            productId: undefined,
+            isProduct: true,
+          };
+        }
+      }
+
+      // Если последняя часть не число, это категория или подкатегория
+      return {
+        section: pathParts[1],
+        subsectionOrId: pathParts.length > 2 ? pathParts[2] : undefined,
+        productId: pathParts.length > 3 ? pathParts[3] : undefined,
+        isProduct: false,
+      };
+    }
+
+    return {
+      section: undefined,
+      subsectionOrId: undefined,
+      productId: undefined,
+      isProduct: false,
+    };
+  }, [currentPath]);
 
   useEffect(() => {
     if (catalogs.length === 0) {
       fetchCatalogList();
     }
-  }, [isMobile, catalogs.length, fetchCatalogList]);
+
+    // Загружаем элементы каталога при первом рендере, если они еще не загружены
+    if (items.length === 0 && !loadingItems) {
+      fetchItems({ page: 1 });
+    }
+  }, [
+    isMobile,
+    catalogs.length,
+    fetchCatalogList,
+    items.length,
+    loadingItems,
+    fetchItems,
+  ]);
 
   useEffect(() => {
     if (catalogs.length > 0) {
@@ -80,6 +153,72 @@ const CatalogPageContent = () => {
     }
   }, [catalogs]);
 
+  // Обработчик изменения URL без перезагрузки страницы
+  useEffect(() => {
+    const handleUrlChanged = (event: Event) => {
+      const newPath = window.location.pathname;
+
+      // Если путь не изменился, ничего не делаем
+      if (newPath === currentPath) {
+        return;
+      }
+
+      // Обновляем текущий путь
+      setCurrentPath(newPath);
+
+      // Разбираем путь для определения параметров
+      const pathParts = newPath.split("/").filter(Boolean);
+      if (pathParts[0] === "catalog") {
+        // Проверяем, является ли последняя часть пути числом (ID товара)
+        const lastPart = pathParts[pathParts.length - 1];
+        const isLastPartNumeric = !isNaN(Number(lastPart));
+
+        // Если последняя часть - число, это ID товара
+        if (isLastPartNumeric) {
+          // Для вложенных категорий (например, /catalog/pamyatniki/dvojnye-pamyatniki/111)
+          if (pathParts.length > 3) {
+            // Загружаем данные для подкатегории
+            fetchItems({ slug: `${pathParts[1]}/${pathParts[2]}` });
+          }
+          else if (pathParts.length === 3) {
+            fetchItems({ slug: pathParts[1] });
+          }
+
+        } else {
+          if (pathParts.length > 2) {
+            // Это подкатегория
+            fetchItems({ slug: `${pathParts[1]}/${pathParts[2]}` });
+          } else if (pathParts.length === 2) {
+            // Это категория
+            fetchItems({ slug: pathParts[1] });
+          } else {
+            // Это корневой каталог
+            fetchItems({ page: 1 });
+          }
+        }
+      }
+    };
+
+    // Обработчик для popstate (навигация назад/вперед)
+    const handlePopState = () => {
+      handleUrlChanged(new Event("urlChanged"));
+    };
+
+    // Вызываем обработчик при монтировании компонента
+    handleUrlChanged(new Event("urlChanged"));
+
+    window.addEventListener("urlChanged", handleUrlChanged as EventListener);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener(
+        "urlChanged",
+        handleUrlChanged as EventListener
+      );
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [fetchItems, currentPath]);
+
   const handlePageChange = (page: number) => {
     window.scrollTo({
       top: 0,
@@ -89,12 +228,29 @@ const CatalogPageContent = () => {
     setCurrentPage(page);
   };
 
+  // Получаем ID продукта, убедившись, что он не undefined
+  const getProductId = (): string => {
+    const pathParts = currentPath.split("/").filter(Boolean);
+    // Если последняя часть пути - число, это ID товара
+    const lastPart = pathParts[pathParts.length - 1];
+    if (!isNaN(Number(lastPart))) {
+      return lastPart;
+    }
+
+    // Для совместимости со старой логикой
+    const { productId, subsectionOrId } = getPathParams();
+    if (productId) return productId;
+    if (subsectionOrId && !isNaN(Number(subsectionOrId))) return subsectionOrId;
+
+    return "";
+  };
+
   if (error) {
     return (
       <Box sx={styles.container}>
-        <Text variant="h5" color="error">
+        <AnimatedText variant="h5" color="error" animationType="fadeIn">
           {error}
-        </Text>
+        </AnimatedText>
       </Box>
     );
   }
@@ -102,49 +258,55 @@ const CatalogPageContent = () => {
   return (
     <Box sx={styles.container}>
       <Breadcrumbs />
+
       <Box sx={styles.wrapper}>
         {!isMobile ? (
           <CatalogMenu links={linksList} />
         ) : (
           <MobileCatalogMenu links={linksList} />
         )}
+
         <Box
           sx={{
             width: "100%",
             position: "relative",
-            transition: "opacity 0.3s ease",
+            minHeight: "300px",
           }}
         >
-          {loadingItems ? (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              zIndex={1}
-            >
-              <CircularProgress />
-            </Box>
-          ) : null}
-          {productId || (subsectionOrId && !isNaN(Number(subsectionOrId))) ? (
-            <CatalogItem productId={productId || subsectionOrId} />
-          ) : (
-            <>
-              <CatalogList items={items} loadingItems={loadingItems} />
-              {totalPages > 0 && (
-                <CustomPagination
-                  totalItems={totalPages}
-                  itemsPerPage={20}
-                  currentPage={currentPage}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </>
-          )}
+          <AnimatePresence mode="wait">
+            {getPathParams().isProduct ? (
+              <motion.div
+                key={`product-${getProductId()}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <CatalogItem productId={getProductId()} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`list-${currentPath}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <CatalogList items={items} loadingItems={loadingItems} />
+
+                {totalPages > 0 && (
+                  <Box mt={4}>
+                    <CustomPagination
+                      totalItems={totalPages}
+                      itemsPerPage={20}
+                      currentPage={currentPage}
+                      onPageChange={handlePageChange}
+                    />
+                  </Box>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Box>
       </Box>
     </Box>

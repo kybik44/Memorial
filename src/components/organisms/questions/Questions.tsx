@@ -15,6 +15,7 @@ import questionsMobile from "/assets/img/questionsMobile.png";
 import Text from "/components/atoms/text/Text";
 import Form from "/components/molecules/form-controls/Form/Form";
 import MuiInput from "/components/molecules/form-controls/input/Input";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 interface IForm {
   name: string;
@@ -76,55 +77,75 @@ const Questions = () => {
   return (
     <Box sx={styles.container}>
       {isSmallScreen && (
-        <Box
-          component="img"
-          sx={styles.image}
-          alt="Questions Background"
-          src={questionsMobile}
-          mb={2}
-        />
+        <FadeInWhenVisible delay={0.1}>
+          <Box
+            component="img"
+            sx={styles.image}
+            alt="Questions Background"
+            src={questionsMobile}
+            mb={2}
+          />
+        </FadeInWhenVisible>
       )}
       <Container maxWidth="xl" sx={styles.content}>
-        <Text variant={isSmallScreen ? "h2" : "h1"} sx={styles.title}>
-          Если у вас остались вопросы, мы с радостью ответим на них
-        </Text>
-        <Text variant="subtitle2" sx={styles.subtitle}>
-          Оставьте заявку, чтобы получить БЕСПЛАТНУЮ консультацию
-        </Text>
-        <Form
-          methods={methods}
-          onSubmit={onSubmit}
-          onInvalid={onError}
-          sx={styles.form}
-        >
-          <Grid container rowGap={3} columnGap={6} sx={styles.gridContainer}>
-            <Grid item sx={styles.item}>
-              <MuiInput
-                name="name"
-                label="Ваше имя"
-                placeholder="Иван"
-                sx={styles.input}
-              />
+        <FadeInWhenVisible delay={0.2}>
+          <Text 
+            variant={isSmallScreen ? "h2" : "h1"} 
+            sx={styles.title}
+            animated
+            animationType="highlight"
+          >
+            Если у вас остались вопросы, мы с радостью ответим на них
+          </Text>
+        </FadeInWhenVisible>
+        
+        <FadeInWhenVisible delay={0.3}>
+          <Text 
+            variant="subtitle2" 
+            sx={styles.subtitle}
+            animated
+            animationType="fadeIn"
+          >
+            Оставьте заявку, чтобы получить БЕСПЛАТНУЮ консультацию
+          </Text>
+        </FadeInWhenVisible>
+        
+        <FadeInWhenVisible delay={0.4} direction="up">
+          <Form
+            methods={methods}
+            onSubmit={onSubmit}
+            onInvalid={onError}
+            sx={styles.form}
+          >
+            <Grid container rowGap={3} columnGap={6} sx={styles.gridContainer}>
+              <Grid item sx={styles.item}>
+                <MuiInput
+                  name="name"
+                  label="Ваше имя"
+                  placeholder="Иван"
+                  sx={styles.input}
+                />
+              </Grid>
+              <Grid item sx={styles.item}>
+                <MuiInput
+                  name="phone"
+                  label="Ваш номер телефона"
+                  placeholder="+375 29 XXX-XX-XX"
+                  sx={styles.input}
+                />
+              </Grid>
+              <Grid item sx={styles.item}>
+                <Button
+                  type="submit"
+                  sx={styles.button}
+                  disabled={!methods.formState.isValid}
+                >
+                  Оставить заявку
+                </Button>
+              </Grid>
             </Grid>
-            <Grid item sx={styles.item}>
-              <MuiInput
-                name="phone"
-                label="Ваш номер телефона"
-                placeholder="+375 29 XXX-XX-XX"
-                sx={styles.input}
-              />
-            </Grid>
-            <Grid item sx={styles.item}>
-              <Button
-                type="submit"
-                sx={styles.button}
-                disabled={!methods.formState.isValid}
-              >
-                Оставить заявку
-              </Button>
-            </Grid>
-          </Grid>
-        </Form>
+          </Form>
+        </FadeInWhenVisible>
       </Container>
     </Box>
   );

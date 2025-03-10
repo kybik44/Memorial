@@ -1,5 +1,5 @@
 import { Box, Button, Card, Grid } from "@mui/material";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import noImage from "../../../assets/img/no-image.png";
 import styles from "./styles";
@@ -17,30 +17,35 @@ interface CatalogListProps {
 const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
   const { section, subsectionOrId } = useParams();
   const navigate = useNavigate();
-  const { currentCategory, catalogStructure } = useCatalogContext();
+  const { currentCategory } = useCatalogContext();
 
-  const handleItemClick = (id: number, category_slug?: string) => {
+  const handleItemClick = useCallback((id: number, category_slug?: string) => {
     const basePath = "/catalog";
     let url;
 
-    if (category_slug) {
+    if (category_slug && category_slug.trim() !== '') {
       url = `${basePath}/${category_slug}/${id}`;
+      console.log(`Navigating to: ${url} (using category_slug)`);
     } else if (
       subsectionOrId &&
       subsectionOrId !== "undefined" &&
       isNaN(Number(subsectionOrId))
     ) {
       url = `${basePath}/${section}/${subsectionOrId}/${id}`;
+      console.log(`Navigating to: ${url} (using section/subsection)`);
     } else if (section && section !== "undefined") {
       url = `${basePath}/${section}/${id}`;
+      console.log(`Navigating to: ${url} (using section)`);
     } else if (currentCategory) {
       url = `${basePath}/${currentCategory.full_slug}/${id}`;
+      console.log(`Navigating to: ${url} (using currentCategory)`);
     } else {
       url = `${basePath}/${id}`;
+      console.log(`Navigating to: ${url} (using id only)`);
     }
 
     navigate(url);
-  };
+  }, [section, subsectionOrId, currentCategory, navigate]);
 
   if (!loadingItems && (!items || items.length === 0)) {
     return (
@@ -105,14 +110,27 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
       spacing={{ xs: 2, sm: 3, md: 4, lg: 6 }}
       sx={{
         ...styles.gridContainer,
-        opacity: items.length === 0 ? 0.5 : 1,
-        transition: "opacity 0.2s ease",
+        opacity: loadingItems ? 0.7 : 1,
+        transition: "opacity 0.3s ease-in-out",
       }}
     >
       {items.map((item) => (
         <Grid item key={item.id} xs={6} sm={6} md={4} lg={4} xl={3}>
-          <Card sx={styles.card}>
-            <Box sx={styles.imageWrapper}>
+          <Card
+            sx={{
+              ...styles.card,
+              height: "100%", // Фиксированная высота для карточки
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Box
+              sx={{
+                ...styles.imageWrapper,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
               <LazyImage
                 src={
                   item.image ||
@@ -123,27 +141,43 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
                 style={{
                   width: "100%",
                   height: "100%",
-                  maxWidth: "400px",
                   objectFit: "contain",
-                  aspectRatio: "4/3",
+                  aspectRatio: "1/1",
                 }}
               />
             </Box>
-            <Text variant="h5" component="div" sx={styles.cardTitle}>
-              {item.title}
-            </Text>
-            {item.price && (
-              <Text variant="body2" fontWeight={700} color="text.secondary">
-                {item.price} бел. р
-              </Text>
-            )}
-            <Button
-              size="small"
-              sx={styles.button}
-              onClick={() => handleItemClick(item.id, item.category_slug)}
+            <Box
+              sx={{
+                flexGrow: 1,
+                display: "flex",
+                flexDirection: "column",
+                padding: 2,
+              }}
             >
-              Подробнее
-            </Button>
+              <Text variant="h5" component="div" sx={styles.cardTitle}>
+                {item.title}
+              </Text>
+              {item.price && (
+                <Text
+                  variant="body2"
+                  fontWeight={700}
+                  color="text.secondary"
+                  sx={{ mt: 1 }}
+                >
+                  {item.price} бел. р
+                </Text>
+              )}
+              <Box sx={{ mt: "auto", pt: 2 }}>
+                <Button
+                  size="small"
+                  sx={styles.button}
+                  onClick={() => handleItemClick(item.id, item.category_slug)}
+                  fullWidth
+                >
+                  Подробнее
+                </Button>
+              </Box>
+            </Box>
           </Card>
         </Grid>
       ))}

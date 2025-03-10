@@ -1,11 +1,12 @@
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import { Collapse, List } from "@mui/material";
+import { List } from "@mui/material";
+import { AnimatePresence, motion } from "framer-motion";
 import { FC, memo, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCatalogContext } from "../../../contexts/CatalogContext";
 import ListLink from "./ListLink";
 import styles from "./styles";
-import { useCatalogContext } from "../../../contexts/CatalogContext";
 
 interface MenuLinkProps {
   title: string;
@@ -29,19 +30,51 @@ const MenuLink: FC<MenuLinkProps> = memo(
 
     const handleCategoryClick = async (e: React.MouseEvent) => {
       e.stopPropagation();
+
       await fetchItems({ slug: section });
-      navigate(`/catalog/${section}`);
+
+      const newUrl = `/catalog/${section}`;
+      window.history.replaceState({ path: newUrl }, "", newUrl);
+
+      const event = new CustomEvent("urlChanged", { detail: { path: newUrl } });
+      window.dispatchEvent(event);
+
       onClose?.();
     };
 
-    const handleSubLinkClick = async (to: string) => {
-      if (to && to !== "undefined") {
-        await fetchItems({ slug: `${section}/${to}` });
-        navigate(`/catalog/${section}/${to}`);
+    const handleIconClick = (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (links && links.length > 0) {
+        setOpen(!open);
       }
     };
 
-    const icon = links?.length ? open ? <ExpandLess /> : <ExpandMore /> : null;
+    const handleSubLinkClick = (to: string) => async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (to && to !== "undefined") {
+        await fetchItems({ slug: `${section}/${to}` });
+
+        const newUrl = `/catalog/${section}/${to}`;
+        window.history.replaceState({ path: newUrl }, "", newUrl);
+
+        const event = new CustomEvent("urlChanged", {
+          detail: { path: newUrl },
+        });
+        window.dispatchEvent(event);
+
+        onClose?.();
+      }
+    };
+
+    // Создаем иконку с обработчиком клика
+    const icon = links?.length ? (
+      <span
+        onClick={handleIconClick}
+        style={{ cursor: "pointer", padding: "8px" }}
+      >
+        {open ? <ExpandLess /> : <ExpandMore />}
+      </span>
+    ) : null;
 
     return (
       <>
@@ -51,23 +84,28 @@ const MenuLink: FC<MenuLinkProps> = memo(
           onClick={handleCategoryClick}
           isActive={isActive}
         />
-        {links && links.length > 0 && (
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <List sx={styles.nestedList} disablePadding>
-              {links.map((link) => (
-                <ListLink
-                  key={link.to}
-                  title={link.title}
-                  onClick={(e: any) => {
-                    e.stopPropagation();
-                    handleSubLinkClick(link.to);
-                  }}
-                  isNested
-                />
-              ))}
-            </List>
-          </Collapse>
-        )}
+        <AnimatePresence initial={false}>
+          {links && links.length > 0 && open && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              style={{ overflow: "hidden" }}
+            >
+              <List sx={styles.nestedList} disablePadding>
+                {links.map((link) => (
+                  <ListLink
+                    key={link.to}
+                    title={link.title}
+                    onClick={handleSubLinkClick(link.to)}
+                    isNested
+                  />
+                ))}
+              </List>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </>
     );
   }

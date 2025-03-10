@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import MuiBreadcrumbs from "@mui/material/Breadcrumbs";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
 import BreadcrumbsLink from "./BreadcrumbsLink";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
@@ -13,26 +13,39 @@ interface BreadcrumbItem {
 }
 
 const Breadcrumbs = () => {
-  const { section, subsectionOrId, productId } = useParams();
-  const { getCurrentCategoryPath, catalogStructure, catalogs, fetchItems } =
+  const { getCurrentCategoryPath, catalogStructure, fetchItems } =
     useCatalogContext();
-  const navigate = useNavigate();
   const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([
     { title: "Главная", to: "/" },
     { title: "Каталог", to: "/catalog" },
   ]);
 
-  const handleCatalogClick = () => {
+  const handleCatalogClick = (e: React.MouseEvent) => {
+    // Обновляем URL без перезагрузки страницы и без добавления в историю
+    window.history.replaceState({ path: '/catalog' }, '', '/catalog');
     fetchItems({ page: 1 });
-    navigate("/catalog");
+    
+    // Вручную запускаем обновление содержимого
+    const event = new CustomEvent('urlChanged', { detail: { path: '/catalog' } });
+    window.dispatchEvent(event);
   };
 
-  useEffect(() => {
-    const updateBreadcrumbs = async () => {
-      const newBreadcrumbs = [
-        { title: "Главная", to: "/" },
-        { title: "Каталог", to: "/catalog" },
-      ];
+  // Функция для обновления хлебных крошек на основе текущего URL
+  const updateBreadcrumbs = useCallback(async () => {
+    const newBreadcrumbs = [
+      { title: "Главная", to: "/" },
+      { title: "Каталог", to: "/catalog" },
+    ];
+
+    // Получаем текущий путь из URL
+    const path = window.location.pathname;
+    const pathParts = path.split('/').filter(Boolean);
+    
+    // Если мы находимся в каталоге
+    if (pathParts[0] === 'catalog') {
+      const section = pathParts[1];
+      const subsectionOrId = pathParts[2];
+      const productId = pathParts[3];
 
       if (section) {
         const categoryPath = getCurrentCategoryPath(section);
@@ -48,7 +61,6 @@ const Breadcrumbs = () => {
         // Проверяем подраздел
         if (subsectionOrId && isNaN(Number(subsectionOrId))) {
           const fullSlug = `${section}/${subsectionOrId}`;
-
           const subcategory = catalogStructure[fullSlug];
 
           if (subcategory) {
@@ -58,30 +70,52 @@ const Breadcrumbs = () => {
             });
           }
         }
+
+        // Если это товар
+        if (productId || (subsectionOrId && !isNaN(Number(subsectionOrId)))) {
+          newBreadcrumbs.push({
+            title: "Товар",
+            to: "#",
+          });
+        }
       }
+    }
 
-      if (productId) {
-        newBreadcrumbs.push({
-          title: "Товар",
-          to: "#",
-        });
-      }
+    setBreadcrumbs(newBreadcrumbs);
+  }, [getCurrentCategoryPath, catalogStructure]);
 
-      console.log("Final breadcrumbs:", newBreadcrumbs);
-      setBreadcrumbs(newBreadcrumbs);
-    };
-
+  // Обновляем хлебные крошки при изменении URL
+  useEffect(() => {
     updateBreadcrumbs();
-  }, [
-    section,
-    subsectionOrId,
-    productId,
-    getCurrentCategoryPath,
-    catalogStructure,
-    catalogs,
-    fetchItems,
-    navigate,
-  ]);
+    
+    // Обработчик для нашего кастомного события
+    const handleUrlChanged = () => {
+      updateBreadcrumbs();
+    };
+    
+    // Обработчик для popstate (навигация назад/вперед)
+    const handlePopState = () => {
+      updateBreadcrumbs();
+    };
+    
+    // Добавляем слушатель события click для обновления хлебных крошек при клике на ссылки
+    const handleDocumentClick = () => {
+      // Используем setTimeout, чтобы дать время для обновления URL
+      setTimeout(() => {
+        updateBreadcrumbs();
+      }, 0);
+    };
+    
+    window.addEventListener('urlChanged', handleUrlChanged as EventListener);
+    window.addEventListener('popstate', handlePopState);
+    document.addEventListener('click', handleDocumentClick);
+    
+    return () => {
+      window.removeEventListener('urlChanged', handleUrlChanged as EventListener);
+      window.removeEventListener('popstate', handlePopState);
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, [updateBreadcrumbs]);
 
   return (
     <Box sx={styles.wrapper}>
@@ -117,10 +151,6 @@ const Breadcrumbs = () => {
                   <Text
                     variant="body1"
                     customColor="text.primary"
-                    sx={{
-                      ...styles.link,
-                      ...styles.last,
-                    }}
                   >
                     {item.title}
                   </Text>

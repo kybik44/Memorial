@@ -2,6 +2,8 @@ import { Box, Container, Grid } from "@mui/material";
 import styles from "./styles";
 import womanImage from "/assets/img/woman.png";
 import Text from "/components/atoms/text/Text";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
+import { motion } from "framer-motion";
 
 const Description = () => {
   return (
@@ -13,13 +15,34 @@ const Description = () => {
         sx={styles.content}
       >
         <Grid item sm={12} lg={6}>
-          <Box component="img" src={womanImage} alt="Woman" sx={styles.image} />
+          <FadeInWhenVisible delay={0.1}>
+            <Box
+              component="img"
+              src={womanImage}
+              alt="Woman"
+              sx={styles.image}
+            />
+          </FadeInWhenVisible>
         </Grid>
         <Grid item sm={12} lg={6}>
-          <Text variant="h2" color="text.primary" sx={styles.title}>
+          <Text 
+            variant="h2" 
+            color="text.primary" 
+            sx={styles.title}
+            animated
+            animationType="fadeIn"
+            delay={0.2}
+          >
             Добро пожаловать в Last Stone
           </Text>
-          <Text multiline variant="h4" sx={styles.text}>
+          <Text 
+            multiline 
+            variant="h4" 
+            sx={styles.text}
+            animated
+            animationType="fadeIn"
+            delay={0.3}
+          >
             Мы — команда профессионалов, предоставляющих уникальные надгробные
             памятники с глубоким пониманием чувств и потребностей в трудные
             моменты прощания.{"\n\n"}

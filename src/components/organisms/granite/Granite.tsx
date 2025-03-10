@@ -11,6 +11,7 @@ import GraniteList from "./GraniteList";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 import { useMainPageContext } from "/contexts/MainPageContext";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 const Granite = () => {
   const { materials, loadingMaterials } = useMainPageContext();
@@ -31,20 +32,29 @@ const Granite = () => {
           variant={isSmallScreen ? "h2" : "h1"}
           customColor="text.primary"
           sx={styles.title}
+          animated
+          animationType="fadeIn"
+          delay={0.1}
         >
           Виды гранита
         </Text>
         {loadingMaterials ? (
           <Grid item xs={12}>
-            Loading materials...
+            <Text animated animationType="fadeIn">
+              Loading materials...
+            </Text>
           </Grid>
         ) : (
           <>
-            <GraniteList materials={materials} expanded={expanded} />
+            <FadeInWhenVisible delay={0.2}>
+              <GraniteList materials={materials} expanded={expanded} />
+            </FadeInWhenVisible>
             {materials.length > 12 && (
-              <Button onClick={toggleExpand} sx={styles.button}>
-                {expanded ? "Свернуть" : "Развернуть"}
-              </Button>
+              <FadeInWhenVisible delay={0.3}>
+                <Button onClick={toggleExpand} sx={styles.button}>
+                  {expanded ? "Свернуть" : "Развернуть"}
+                </Button>
+              </FadeInWhenVisible>
             )}
           </>
         )}

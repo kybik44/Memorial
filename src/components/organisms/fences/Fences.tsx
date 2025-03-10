@@ -4,6 +4,7 @@ import styles from "./styles";
 import Text from "/components/atoms/text/Text";
 import { useMainPageContext } from "/contexts/MainPageContext";
 import Loading from "/components/atoms/loading/Loading";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 const Fences = () => {
   const { fencesCatalog, catalogSections } = useMainPageContext();
@@ -16,16 +17,26 @@ const Fences = () => {
   return (
     <Box sx={styles.container}>
       <Container maxWidth="xl" sx={styles.content}>
-        <Text variant="h1" multiline sx={styles.title}>
+        <Text 
+          variant="h1" 
+          multiline 
+          sx={styles.title}
+          animated
+          animationType="fadeIn"
+          delay={0.1}
+        >
           {fencesSection.title}
         </Text>
-        <FencesList
-          items={fencesCatalog.map((item) => ({
-            title: item.title,
-            image: item.image || "",
-            slug: item.full_slug,
-          }))}
-        />
+        <FadeInWhenVisible delay={0.2} direction="right">
+          <FencesList
+            items={fencesCatalog.map((item) => ({
+              id: item.id,
+              title: item.title,
+              image: item.image || "",
+              link: item.full_slug,
+            }))}
+          />
+        </FadeInWhenVisible>
       </Container>
     </Box>
   );

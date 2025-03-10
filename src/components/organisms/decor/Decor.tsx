@@ -7,6 +7,7 @@ import Carousel from "./Carousel";
 import styles from "./styles";
 import { useMainPageContext } from "/contexts/MainPageContext";
 import Loading from "/components/atoms/loading/Loading";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 const Decor = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -22,39 +23,46 @@ const Decor = () => {
   return (
     <Box sx={styles.container}>
       <Container maxWidth="xl" sx={styles.content}>
-        <Box sx={styles.titleBox}>
-          <Box sx={styles.arrowContainer}>
-            <Box
-              component="img"
-              sx={styles.arrow}
-              alt="Arrow left"
-              src={arrowLeft}
-            />
+        <FadeInWhenVisible delay={0.1} direction="up">
+          <Box sx={styles.titleBox}>
+            <Box sx={styles.arrowContainer}>
+              <Box
+                component="img"
+                sx={styles.arrow}
+                alt="Arrow left"
+                src={arrowLeft}
+              />
+            </Box>
+            <Text
+              variant={isSmallScreen ? "h2" : "h1"}
+              customColor="text.secondary"
+              sx={styles.title}
+              animated
+              animationType="highlight"
+            >
+              {carouselSection.title}
+            </Text>
+            <Box sx={styles.arrowContainer}>
+              <Box
+                component="img"
+                sx={styles.arrow}
+                alt="Arrow right"
+                src={arrowRight}
+              />
+            </Box>
           </Box>
-          <Text
-            variant={isSmallScreen ? "h2" : "h1"}
-            customColor="text.secondary"
-            sx={styles.title}
-          >
-            {carouselSection.title}
-          </Text>
-          <Box sx={styles.arrowContainer}>
-            <Box
-              component="img"
-              sx={styles.arrow}
-              alt="Arrow right"
-              src={arrowRight}
-            />
-          </Box>
-        </Box>
-        <Carousel
-          items={decorCatalog.map((item) => ({
-            id: item.id,
-            title: item.title,
-            link: item.full_slug,
-            image: item.image || "",
-          }))}
-        />
+        </FadeInWhenVisible>
+        
+        <FadeInWhenVisible delay={0.3}>
+          <Carousel
+            items={decorCatalog.map((item) => ({
+              id: item.id,
+              title: item.title,
+              link: item.full_slug,
+              image: item.image || "",
+            }))}
+          />
+        </FadeInWhenVisible>
       </Container>
       <Box component={"img"} src={carouselCloud} sx={styles.cloud} />
     </Box>
