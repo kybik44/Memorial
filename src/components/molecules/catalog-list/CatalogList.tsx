@@ -7,6 +7,7 @@ import { CatalogListItem } from "/api/types";
 import LazyImage from "/components/atoms/lazy-image/LazyImage";
 import Text from "/components/atoms/text/Text";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
+import { useCatalogContext } from "/contexts/CatalogContext";
 
 interface CatalogListProps {
   items?: CatalogListItem[];
@@ -16,6 +17,7 @@ interface CatalogListProps {
 const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
   const { section, subsectionOrId } = useParams();
   const navigate = useNavigate();
+  const { currentCategory, catalogStructure } = useCatalogContext();
 
   const handleItemClick = (id: number, category_slug?: string) => {
     const basePath = "/catalog";
@@ -31,8 +33,10 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
       url = `${basePath}/${section}/${subsectionOrId}/${id}`;
     } else if (section && section !== "undefined") {
       url = `${basePath}/${section}/${id}`;
+    } else if (currentCategory) {
+      url = `${basePath}/${currentCategory.full_slug}/${id}`;
     } else {
-      url = `${basePath}/undefined/${id}`;
+      url = `${basePath}/${id}`;
     }
 
     navigate(url);

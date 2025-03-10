@@ -6,7 +6,7 @@ import {
   Theme,
   useMediaQuery,
 } from "@mui/material";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import GalleryItem from "./GalleryItem";
 import styles from "./styles";
@@ -39,6 +39,9 @@ const Gallery: FC<GalleryProps> = ({ isMainPage = false }) => {
     : galleryContext?.loading;
   const error = isMainPage ? mainPageContext?.error : galleryContext?.error;
 
+  // Use a ref to store the previous works to avoid unnecessary updates
+  const prevWorksRef = useRef<typeof works>([]);
+
   const {
     open,
     currentImageIndex,
@@ -51,21 +54,44 @@ const Gallery: FC<GalleryProps> = ({ isMainPage = false }) => {
     handleClose,
   } = useGallery();
 
-  const sortedWorks = works?.length
-    ? [...works].sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      )
-    : [];
+  // Memoize the sorting function to avoid unnecessary recalculations
+  const getSortedWorks = useCallback(() => {
+    if (!works?.length) return [];
+    
+    return [...works].sort(
+      (a, b) =>
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
+  }, [works]);
 
-  const displayedWorks = isMainPage ? sortedWorks.slice(0, 10) : sortedWorks;
+  // Memoize the displayed works
+  const getDisplayedWorks = useCallback(() => {
+    const sortedWorks = getSortedWorks();
+    return isMainPage ? sortedWorks.slice(0, 10) : sortedWorks;
+  }, [getSortedWorks, isMainPage]);
 
+  // Update images only when works change
   useEffect(() => {
-    if (works && works?.length > 0) {
-      const imageUrls = works.map((work) => work.image);
+    // Skip if works haven't changed
+    if (
+      JSON.stringify(prevWorksRef.current) === JSON.stringify(works) ||
+      !works?.length
+    ) {
+      return;
+    }
+    
+    prevWorksRef.current = works;
+    const displayedWorks = getDisplayedWorks();
+    
+    if (displayedWorks.length > 0) {
+      const imageUrls = displayedWorks.map((work) => work.image);
       setImages(imageUrls);
     }
-  }, [works, setImages]);
+  }, [works, getDisplayedWorks, setImages]);
+
+  const handleViewMore = useCallback(() => {
+    navigate("/gallery", { state: { ourWorks: works } });
+  }, [navigate, works]);
 
   if (loading) {
     return <LoadingScreen />;
@@ -75,9 +101,7 @@ const Gallery: FC<GalleryProps> = ({ isMainPage = false }) => {
     return <ErrorScreen message={error} />;
   }
 
-  const handleViewMore = () => {
-    navigate("/gallery", { state: { ourWorks: works } });
-  };
+  const displayedWorks = getDisplayedWorks();
 
   return (
     <>

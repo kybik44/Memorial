@@ -10,19 +10,14 @@ const GalleryItem: FC<{
 }> = ({ item, onClick, index }) => {
   const { image, cropping } = item;
 
-  // Парсим параметры кропа
-  const [x, y, width, height] = cropping ? cropping.split(',').map(Number) : [0, 0, 0, 0];
-
-  // Определяем размеры на основе кропа
-  const isVertical = height > width;
-  const rows = isVertical ? 2 : 1;
-  const cols = isVertical ? 1 : 2;
-
+  const [cols, rows] = cropping ? cropping.split("x").map(Number) : [1, 1];
+  
   return (
     <ImageListItem 
       cols={cols} 
       rows={rows} 
       sx={styles.listItem}
+      key={image}
     >
       <img
         src={image}
@@ -42,3 +37,4 @@ const GalleryItem: FC<{
 };
 
 export default GalleryItem;
+
