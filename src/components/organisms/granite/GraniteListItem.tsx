@@ -3,7 +3,15 @@ import { FC, memo, useState } from "react";
 import styles from "./styles";
 import { Material } from "/api/types";
 import Text from "/components/atoms/text/Text";
-interface GraniteListItemProps extends Material {}
+
+interface GraniteListItemProps {
+  id: number;
+  title: string;
+  description: string;
+  image?: string;
+  is_composite: boolean;
+  composite: Material[];
+}
 
 const GraniteListItem: FC<GraniteListItemProps> = memo(
   ({ title, description, image }) => {
@@ -22,7 +30,18 @@ const GraniteListItem: FC<GraniteListItemProps> = memo(
         onMouseLeave={() => setHovered(false)}
       >
         <Box sx={styles.card}>
-          <Box sx={[styles.cardInner, hovered && styles.cardFlipped]}>
+          <div
+            className={`card-inner ${hovered ? "card-flipped" : ""}`}
+            style={{
+              position: "relative",
+              width: "100%",
+              height: "100%",
+              transition: "transform 0.6s",
+              transformStyle: "preserve-3d",
+              transform: hovered ? "rotateY(180deg)" : "rotateY(0deg)",
+              ...(styles.cardInner as any),
+            }}
+          >
             <Box sx={styles.cardFront}>
               {image && (
                 <CardMedia
@@ -41,7 +60,7 @@ const GraniteListItem: FC<GraniteListItemProps> = memo(
                 {description}
               </Text>
             </Box>
-          </Box>
+          </div>
         </Box>
       </Grid>
     );

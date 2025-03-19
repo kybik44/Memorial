@@ -1,7 +1,6 @@
 import Box from "@mui/material/Box";
 import List from "@mui/material/List";
 import { FC, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
 import MenuLink from "./MenuLink";
 import styles from "./styles";
 
@@ -16,7 +15,6 @@ interface CatalogMenuProps {
 }
 
 const CatalogMenu: FC<CatalogMenuProps> = ({ links = [] }) => {
-  const location = useLocation();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   const currentSection = useMemo(() => {

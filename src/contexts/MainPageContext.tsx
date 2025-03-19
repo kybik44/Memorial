@@ -1,17 +1,12 @@
 import React, {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
-import {
-  getMainPageData,
-  getMaterialsList,
-  getCatalogList,
-  getOurWorksList,
-} from "/api/api";
-import { MainPage as IMainPage, Material, Catalog, OurWorks } from "/api/types";
+import { getMainPageData, getMaterialsList } from "/api/api";
+import { Catalog, MainPage as IMainPage, Material } from "/api/types";
 
 interface MainPageContextType {
   mainPageData: IMainPage | undefined;
@@ -63,10 +58,12 @@ export const MainPageProvider: React.FC<{ children: ReactNode }> = ({
         const data = await getMainPageData();
         if (data) {
           setMainPageData(data);
-          const sortedSections = [...data.catalogs].sort((a, b) => a.position - b.position);
+          const sortedSections = [...data.catalogs].sort(
+            (a, b) => a.position - b.position
+          );
           setCatalogSections(sortedSections);
-          
-          sortedSections.forEach(section => {
+
+          sortedSections.forEach((section) => {
             if (section.carousel) {
               setDecorCatalog(section.catalog);
             } else {

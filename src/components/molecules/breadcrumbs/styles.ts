@@ -31,8 +31,8 @@ const styles: Record<string, SxProps<Theme>> = {
     "&:hover": {
       backgroundColor: "rgba(255, 255, 255, 0.1)",
     },
-    [theme.breakpoints.down("sm")]: {
-      padding: "2px 4px",
+    [theme.breakpoints.down("lg")]: {
+      padding: "0",
       fontSize: "14px",
     },
   },

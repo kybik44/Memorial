@@ -81,11 +81,18 @@ const styles: Record<string, SxProps<Theme>> = {
     transition: 'all 1s ease',
   },
   button: {
+    position: 'relative',
     zIndex: 2,
-    mt: 0,
-    transition: 'all 1s ease',
+    mt: 4,
+    mb: 4,
+    transition: 'all 0.3s ease',
     width: '100%',
     maxWidth: ['100%', '100%', '280px'],
+    color: 'common.white',
+    py: 1.5,
+    '&:hover': {
+      bgcolor: 'primary.dark',
+    },
   },
   collapse: {
     "& .MuiCollapse-wrapperInner": {

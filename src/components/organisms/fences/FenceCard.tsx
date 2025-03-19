@@ -5,12 +5,11 @@ import {
   CardContent,
   Theme,
   useMediaQuery,
-  Box,
 } from "@mui/material";
-import { FC, lazy, Suspense } from "react";
+import { FC } from "react";
 import Text from "../../atoms/text/Text";
 import styles from "./styles";
-import OptimizedImage from '/components/atoms/optimized-image/OptimizedImage';
+import OptimizedImage from "/components/atoms/optimized-image/OptimizedImage";
 
 interface FenceCardProps {
   title: string;
@@ -18,9 +17,7 @@ interface FenceCardProps {
   link: string;
 }
 
-const LazyImage = lazy(() => import('mui-image'));
-
-const FenceCard: FC<FenceCardProps> = ({ title, image, link }) => {
+const FenceCard: FC<FenceCardProps> = ({ title, image }) => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down("sm")
   );
@@ -57,4 +54,4 @@ const FenceCard: FC<FenceCardProps> = ({ title, image, link }) => {
   );
 };
 
-export default FenceCard; 
+export default FenceCard;

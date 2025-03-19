@@ -44,10 +44,7 @@ const GalleryBreadcrumbs: FC = () => {
                   <Text
                     variant="body1"
                     customColor="text.primary"
-                    sx={{
-                      ...styles.link,
-                      ...styles.last,
-                    }}
+                    sx={styles.last}
                   >
                     {item.title}
                   </Text>
@@ -73,4 +70,4 @@ const GalleryBreadcrumbs: FC = () => {
   );
 };
 
-export default GalleryBreadcrumbs; 
+export default GalleryBreadcrumbs;

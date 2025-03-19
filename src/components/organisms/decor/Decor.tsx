@@ -5,9 +5,8 @@ import carouselCloud from "../../../assets/img/carouselCloud.png";
 import Text from "../../atoms/text/Text";
 import Carousel from "./Carousel";
 import styles from "./styles";
-import { useMainPageContext } from "/contexts/MainPageContext";
-import Loading from "/components/atoms/loading/Loading";
 import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
+import { useMainPageContext } from "/contexts/MainPageContext";
 
 const Decor = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>
@@ -16,8 +15,8 @@ const Decor = () => {
   const { decorCatalog, catalogSections } = useMainPageContext();
 
   // Находим секцию с carousel: true
-  const carouselSection = catalogSections.find(section => section.carousel);
-  
+  const carouselSection = catalogSections.find((section) => section.carousel);
+
   if (!decorCatalog.length || !carouselSection) return null;
 
   return (
@@ -52,7 +51,7 @@ const Decor = () => {
             </Box>
           </Box>
         </FadeInWhenVisible>
-        
+
         <FadeInWhenVisible delay={0.3}>
           <Carousel
             items={decorCatalog.map((item) => ({

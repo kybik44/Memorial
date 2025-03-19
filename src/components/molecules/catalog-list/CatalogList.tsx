@@ -1,12 +1,12 @@
-import { Box, Button, Card, Grid } from "@mui/material";
-import { FC, useCallback } from "react";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
+import { Box, Button, Card, CircularProgress, Grid } from "@mui/material";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import noImage from "../../../assets/img/no-image.png";
 import styles from "./styles";
 import { CatalogListItem } from "/api/types";
 import LazyImage from "/components/atoms/lazy-image/LazyImage";
 import Text from "/components/atoms/text/Text";
-import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { useCatalogContext } from "/contexts/CatalogContext";
 
 interface CatalogListProps {
@@ -19,35 +19,130 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
   const navigate = useNavigate();
   const { currentCategory } = useCatalogContext();
 
-  const handleItemClick = useCallback((id: number, category_slug?: string) => {
-    const basePath = "/catalog";
-    let url;
+  // Track the actual UI state to prevent flickering
+  const [uiState, setUiState] = useState<"loading" | "empty" | "items">(
+    loadingItems ? "loading" : items.length === 0 ? "empty" : "items"
+  );
 
-    if (category_slug && category_slug.trim() !== '') {
-      url = `${basePath}/${category_slug}/${id}`;
-      console.log(`Navigating to: ${url} (using category_slug)`);
-    } else if (
-      subsectionOrId &&
-      subsectionOrId !== "undefined" &&
-      isNaN(Number(subsectionOrId))
-    ) {
-      url = `${basePath}/${section}/${subsectionOrId}/${id}`;
-      console.log(`Navigating to: ${url} (using section/subsection)`);
-    } else if (section && section !== "undefined") {
-      url = `${basePath}/${section}/${id}`;
-      console.log(`Navigating to: ${url} (using section)`);
-    } else if (currentCategory) {
-      url = `${basePath}/${currentCategory.full_slug}/${id}`;
-      console.log(`Navigating to: ${url} (using currentCategory)`);
-    } else {
-      url = `${basePath}/${id}`;
-      console.log(`Navigating to: ${url} (using id only)`);
+  // Use a ref to track the last non-loading state
+  const lastNonLoadingStateRef = useRef<"empty" | "items">(
+    items.length === 0 ? "empty" : "items"
+  );
+
+  // Use a ref to track if we're currently showing the loading state
+  const isShowingLoadingRef = useRef(loadingItems);
+
+  // Safer timeout handling with ref
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Update the UI state when props change, with smarter transitions
+  useEffect(() => {
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
     }
 
-    navigate(url);
-  }, [section, subsectionOrId, currentCategory, navigate]);
+    if (loadingItems) {
+      // If we're transitioning to loading state, check if we need to show it
+      if (!isShowingLoadingRef.current) {
+        // Only show loading if it persists for more than a short time
+        timeoutRef.current = setTimeout(() => {
+          setUiState("loading");
+          isShowingLoadingRef.current = true;
+        }, 200);
+      }
+    } else {
+      // We're no longer loading, update state immediately
+      const newState = items.length === 0 ? "empty" : "items";
+      lastNonLoadingStateRef.current = newState;
 
-  if (!loadingItems && (!items || items.length === 0)) {
+      // Small delay for smoother transition (appears more intentional)
+      timeoutRef.current = setTimeout(() => {
+        setUiState(newState);
+        isShowingLoadingRef.current = false;
+      }, 50);
+    }
+
+    // Cleanup timeout on unmount or before next effect run
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [loadingItems, items.length]);
+
+  // Safety net - force UI update if loading persists too long
+  useEffect(() => {
+    // If we've been loading for more than 3 seconds, force show items or empty state
+    if (uiState === "loading") {
+      const safetyTimeout = setTimeout(() => {
+        console.log("Safety timeout triggered - forcing non-loading state");
+        setUiState(lastNonLoadingStateRef.current);
+        isShowingLoadingRef.current = false;
+      }, 3000);
+
+      return () => clearTimeout(safetyTimeout);
+    }
+  }, [uiState]);
+
+  const handleItemClick = useCallback(
+    (id: number, category_slug?: string) => {
+      const basePath = "/catalog";
+      let url;
+
+      // Save the current URL parameters to help with back navigation
+      const currentPage =
+        new URLSearchParams(window.location.search).get("page") || "1";
+
+      if (category_slug && category_slug.trim() !== "") {
+        url = `${basePath}/${category_slug}/${id}`;
+      } else if (
+        subsectionOrId &&
+        subsectionOrId !== "undefined" &&
+        isNaN(Number(subsectionOrId))
+      ) {
+        url = `${basePath}/${section}/${subsectionOrId}/${id}`;
+      } else if (section && section !== "undefined") {
+        url = `${basePath}/${section}/${id}`;
+      } else if (currentCategory) {
+        url = `${basePath}/${currentCategory.full_slug}/${id}`;
+      } else {
+        url = `${basePath}/${id}`;
+      }
+
+      // Store the current page in session storage to help with back navigation
+      sessionStorage.setItem("lastCatalogPage", currentPage);
+
+      navigate(url);
+    },
+    [section, subsectionOrId, currentCategory, navigate]
+  );
+
+  // Display based on the UI state
+  if (uiState === "loading") {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+          width: "100%",
+          gap: 2,
+        }}
+      >
+        <CircularProgress size={40} />
+        <Text variant="h5" mb={4}>
+          Загрузка каталога...
+        </Text>
+      </Box>
+    );
+  }
+
+  if (uiState === "empty") {
     return (
       <Box
         sx={{
@@ -110,16 +205,16 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
       spacing={{ xs: 2, sm: 3, md: 4, lg: 6 }}
       sx={{
         ...styles.gridContainer,
-        opacity: loadingItems ? 0.7 : 1,
+        opacity: 1,
         transition: "opacity 0.3s ease-in-out",
       }}
     >
-      {items.map((item) => (
+      {items.map((item, index) => (
         <Grid item key={item.id} xs={6} sm={6} md={4} lg={4} xl={3}>
           <Card
             sx={{
               ...styles.card,
-              height: "100%", // Фиксированная высота для карточки
+              height: "100%",
               display: "flex",
               flexDirection: "column",
             }}
@@ -133,6 +228,7 @@ const CatalogList: FC<CatalogListProps> = ({ items = [], loadingItems }) => {
             >
               <LazyImage
                 src={
+                  (item?.images && item.images[index]?.thumbnail) ||
                   item.image ||
                   (item.images && item.images[0]?.image) ||
                   noImage

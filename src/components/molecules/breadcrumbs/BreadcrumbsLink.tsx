@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { FC, ReactNode } from "react";
-import { Link as RouterLink } from "react-router-dom";
 
 interface BreadcrumbsLinkProps {
   to: string;
@@ -18,15 +17,20 @@ const BreadcrumbsLink: FC<BreadcrumbsLinkProps> = ({
 }) => {
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    
+
     if (onClick) {
       onClick(e);
-    } else if (to && to !== '#') {
+    } else if (to && to !== "#") {
+      // If going to catalog root, reset to page 1
+      const url = to === "/catalog" 
+        ? "/catalog?page=1" 
+        : to.includes('?') ? to : `${to}?page=1`;
+        
       // Обновляем URL без перезагрузки страницы и без добавления в историю
-      window.history.replaceState({ path: to }, '', to);
-      
+      window.history.replaceState({ path: url }, "", url);
+
       // Вручную запускаем обновление содержимого
-      const event = new CustomEvent('urlChanged', { detail: { path: to } });
+      const event = new CustomEvent("urlChanged", { detail: { path: url } });
       window.dispatchEvent(event);
     }
   };

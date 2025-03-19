@@ -1,8 +1,14 @@
 import { Box, Skeleton } from "@mui/material";
-import { useState } from "react";
+import { useState, FC } from "react";
 import OptimizedImage from "../optimized-image/OptimizedImage";
 
-const ImageWithSkeleton = ({ src, alt, ...props }) => {
+interface ImageWithSkeletonProps {
+  src: string;
+  alt: string;
+  [key: string]: any;
+}
+
+const ImageWithSkeleton: FC<ImageWithSkeletonProps> = ({ src, alt, ...props }) => {
   const [loading, setLoading] = useState(true);
 
   return (

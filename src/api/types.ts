@@ -26,6 +26,7 @@ export interface Item {
   main_description: MainDescription[];
   material_item: MaterialItem[];
   images?: { image: string }[];
+  use_in?: boolean;
 }
 
 export interface ItemDescription {
@@ -60,9 +61,7 @@ export interface PaginatedItemList {
   results: Item[];
 }
 
-export interface MaterialsList extends PaginatedItemList {
-  results: Material[];
-}
+export interface MaterialsList extends PaginatedResponse<Material> {}
 
 export interface MainCatalogPart {
   id: number;
@@ -79,6 +78,7 @@ export interface OurWorks {
   created_at: string;
   updated_at: string;
   image: string;
+  thumbnail: string;
   cropping: string;
 }
 
@@ -106,12 +106,14 @@ export interface CatalogListItem {
   description?: string;
   category: number;
   category_slug?: string;
-  images?: { image: string }[];
+  images?: { image: string; thumbnail?: string }[];
+
   image?: string;
   price?: string;
 }
 
-interface ICatalogList {
+// Export the interface or remove it if not needed
+export interface ICatalogList {
   catalogItems: {
     id: number;
     title: string;
@@ -123,6 +125,7 @@ interface ICatalogList {
     }[];
   }[];
 }
+
 export interface ItemsListParams {
   page?: number;
   order?: string;
@@ -148,14 +151,19 @@ export interface PaginatedItemList extends PaginatedResponse<Item> {}
 
 export interface PaginatedCatalogList extends PaginatedResponse<Catalog> {}
 
-export interface MaterialsList extends PaginatedResponse<Material> {}
-
 // Исправляем интерфейс Material, делая id обязательным
 export interface Material {
   id: number; // убираем опциональность
   title: string;
   description: string;
   images?: string[];
+  is_composite: boolean;
+  composite: Material[];
+  // These fields are not needed in Material but are required to satisfy type checking
+  category?: number;
+  material?: number[];
+  main_description?: MainDescription[];
+  material_item?: MaterialItem[];
 }
 
 export interface MainDescription {

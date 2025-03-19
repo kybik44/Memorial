@@ -1,119 +1,99 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import { OurWorks } from "/api/types";
+import { useState, useEffect, useCallback } from "react";
+import imageCache from "../services/ImageCache";
 
-const useGallery = (initialImages: OurWorks[] = []) => {
+interface UseGalleryHook {
+  open: boolean;
+  currentImageIndex: number;
+  loading: boolean;
+  images: string[];
+  setImages: (images: string[]) => void;
+  handleImage: (index: number) => void;
+  handlePrev: () => void;
+  handleNext: () => void;
+  handleClose: () => void;
+}
+
+/**
+ * Хук для работы с галереей изображений
+ * Обеспечивает кэширование, предзагрузку соседних изображений и управление состоянием
+ */
+const useGallery = (): UseGalleryHook => {
   const [open, setOpen] = useState<boolean>(false);
   const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [images, setImages] = useState<string[]>([]);
-  const imageCache = useRef<Map<string, boolean>>(new Map());
-  
-  // Store the images in a ref to avoid dependency issues
-  const imagesRef = useRef<string[]>([]);
+
+  // Предзагрузка текущего и соседних изображений при изменении индекса
   useEffect(() => {
-    imagesRef.current = images;
-  }, [images]);
+    if (!open || !images.length) return;
 
-  // Stable version of the preloadImage function that doesn't depend on state
-  const preloadImage = useCallback((src: string) => {
-    return new Promise<void>((resolve) => {
-      if (imageCache.current.has(src)) {
-        resolve();
-        return;
-      }
-      
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        imageCache.current.set(src, true);
-        resolve();
-      };
-      img.onerror = () => {
-        // Still resolve even on error to prevent hanging
-        resolve();
-      };
-    });
-  }, []);
+    // Сбрасываем статус загрузки при смене изображения
+    setLoading(true);
 
-  // Handle image loading when currentImageIndex changes
-  useEffect(() => {
-    let isMounted = true;
-    
-    const loadCurrentImage = async () => {
-      const currentImages = imagesRef.current;
-      if (currentImages.length === 0) return;
-      
-      const currentImage = currentImages[currentImageIndex];
-      if (!currentImage) return;
-      
-      if (!imageCache.current.has(currentImage)) {
-        if (isMounted) setLoading(true);
-        
-        await preloadImage(currentImage);
-        
-        if (isMounted) setLoading(false);
-      }
-      
-      // Preload adjacent images without affecting loading state
-      if (currentImages.length > 1) {
-        const prevIndex = (currentImageIndex - 1 + currentImages.length) % currentImages.length;
-        const nextIndex = (currentImageIndex + 1) % currentImages.length;
-        
-        Promise.all([
-          preloadImage(currentImages[prevIndex]),
-          preloadImage(currentImages[nextIndex])
-        ]).catch(() => {
-          // Ignore preloading errors
-        });
-      }
-    };
-    
-    loadCurrentImage();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [currentImageIndex, preloadImage]);
+    // Получаем текущее изображение и проверяем, загружено ли оно
+    const currentImage = images[currentImageIndex];
+    const isCached = imageCache.getFromCache(currentImage) !== null;
 
-  // Stable setImages function with memoization
-  const setImagesStable = useCallback((newImages: string[]) => {
-    // Use a functional update to avoid dependency on current state
-    setImages(prev => {
-      // Only update if the images have actually changed
-      if (JSON.stringify(prev) === JSON.stringify(newImages)) {
-        return prev;
-      }
-      return newImages;
-    });
-  }, []);
-
-  // Load initial images only once
-  useEffect(() => {
-    if (initialImages.length > 0) {
-      const imageUrls = initialImages.map((work) => work.image);
-      setImagesStable(imageUrls);
+    if (isCached) {
+      // Если изображение уже в кэше, сразу сбрасываем статус загрузки
+      setLoading(false);
+    } else {
+      // Иначе загружаем его с высоким приоритетом
+      imageCache.preload(currentImage, 1600)
+        .then(() => setLoading(false))
+        .catch(() => setLoading(false));
     }
-  }, [initialImages, setImagesStable]);
 
+    // Предзагрузка соседних изображений с низким приоритетом
+    const preloadNeighbors = () => {
+      // Определяем индексы соседних изображений
+      const prevIndex = currentImageIndex > 0 ? currentImageIndex - 1 : null;
+      const nextIndex = currentImageIndex < images.length - 1 ? currentImageIndex + 1 : null;
+
+      // Создаем массив для предзагрузки
+      const imagesToPreload: string[] = [];
+
+      // Предзагружаем предыдущее изображение, если оно существует
+      if (prevIndex !== null) {
+        imagesToPreload.push(images[prevIndex]);
+      }
+
+      // Предзагружаем следующее изображение, если оно существует
+      if (nextIndex !== null) {
+        imagesToPreload.push(images[nextIndex]);
+      }
+
+      // Предзагружаем все соседние изображения
+      if (imagesToPreload.length > 0) {
+        imageCache.preloadBatch(imagesToPreload, false);
+      }
+    };
+
+    // Запускаем предзагрузку с небольшой задержкой, чтобы не мешать загрузке текущего изображения
+    setTimeout(preloadNeighbors, 500);
+  }, [currentImageIndex, images, open]);
+
+  // Обработчик открытия изображения по индексу
   const handleImage = useCallback((index: number) => {
     setCurrentImageIndex(index);
     setOpen(true);
   }, []);
 
+  // Обработчик перехода к предыдущему изображению
   const handlePrev = useCallback(() => {
-    setCurrentImageIndex(prevIndex => {
-      const currentImages = imagesRef.current;
-      return (prevIndex - 1 + currentImages.length) % currentImages.length;
-    });
-  }, []);
+    if (currentImageIndex > 0) {
+      setCurrentImageIndex(currentImageIndex - 1);
+    }
+  }, [currentImageIndex]);
 
+  // Обработчик перехода к следующему изображению
   const handleNext = useCallback(() => {
-    setCurrentImageIndex(prevIndex => {
-      const currentImages = imagesRef.current;
-      return (prevIndex + 1) % currentImages.length;
-    });
-  }, []);
+    if (currentImageIndex < images.length - 1) {
+      setCurrentImageIndex(currentImageIndex + 1);
+    }
+  }, [currentImageIndex, images.length]);
 
+  // Обработчик закрытия галереи
   const handleClose = useCallback(() => {
     setOpen(false);
   }, []);
@@ -123,7 +103,7 @@ const useGallery = (initialImages: OurWorks[] = []) => {
     currentImageIndex,
     loading,
     images,
-    setImages: setImagesStable,
+    setImages,
     handleImage,
     handlePrev,
     handleNext,

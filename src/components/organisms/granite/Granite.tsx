@@ -50,11 +50,13 @@ const Granite = () => {
               <GraniteList materials={materials} expanded={expanded} />
             </FadeInWhenVisible>
             {materials.length > 12 && (
-              <FadeInWhenVisible delay={0.3}>
-                <Button onClick={toggleExpand} sx={styles.button}>
-                  {expanded ? "Свернуть" : "Развернуть"}
-                </Button>
-              </FadeInWhenVisible>
+              <Box sx={{ position: 'relative', zIndex: 2 }}>
+                <FadeInWhenVisible delay={0.3}>
+                  <Button onClick={toggleExpand} sx={styles.button}>
+                    {expanded ? "Свернуть" : "Развернуть"}
+                  </Button>
+                </FadeInWhenVisible>
+              </Box>
             )}
           </>
         )}

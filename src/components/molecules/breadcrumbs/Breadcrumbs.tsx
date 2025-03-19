@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
 import MuiBreadcrumbs from "@mui/material/Breadcrumbs";
-import { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
 import BreadcrumbsLink from "./BreadcrumbsLink";
 import styles from "./styles";
 import Text from "/components/atoms/text/Text";
@@ -20,13 +19,15 @@ const Breadcrumbs = () => {
     { title: "Каталог", to: "/catalog" },
   ]);
 
-  const handleCatalogClick = (e: React.MouseEvent) => {
+  const handleCatalogClick = (_: React.MouseEvent) => {
     // Обновляем URL без перезагрузки страницы и без добавления в историю
-    window.history.replaceState({ path: '/catalog' }, '', '/catalog');
+    window.history.replaceState({ path: "/catalog?page=1" }, "", "/catalog?page=1");
     fetchItems({ page: 1 });
-    
+
     // Вручную запускаем обновление содержимого
-    const event = new CustomEvent('urlChanged', { detail: { path: '/catalog' } });
+    const event = new CustomEvent("urlChanged", {
+      detail: { path: "/catalog?page=1" },
+    });
     window.dispatchEvent(event);
   };
 
@@ -39,13 +40,18 @@ const Breadcrumbs = () => {
 
     // Получаем текущий путь из URL
     const path = window.location.pathname;
-    const pathParts = path.split('/').filter(Boolean);
-    
+    const pathParts = path.split("/").filter(Boolean);
+
     // Если мы находимся в каталоге
-    if (pathParts[0] === 'catalog') {
+    if (pathParts[0] === "catalog") {
       const section = pathParts[1];
       const subsectionOrId = pathParts[2];
       const productId = pathParts[3];
+
+      // Get current page from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const page = urlParams.get('page') || '1';
+      const pageQuery = `?page=${page}`;
 
       if (section) {
         const categoryPath = getCurrentCategoryPath(section);
@@ -54,7 +60,7 @@ const Breadcrumbs = () => {
         categoryPath.forEach((category) => {
           newBreadcrumbs.push({
             title: category.title,
-            to: `/catalog/${category.full_slug}`,
+            to: `/catalog/${category.full_slug}${pageQuery}`,
           });
         });
 
@@ -66,7 +72,7 @@ const Breadcrumbs = () => {
           if (subcategory) {
             newBreadcrumbs.push({
               title: subcategory.title,
-              to: `/catalog/${fullSlug}`,
+              to: `/catalog/${fullSlug}${pageQuery}`,
             });
           }
         }
@@ -82,22 +88,22 @@ const Breadcrumbs = () => {
     }
 
     setBreadcrumbs(newBreadcrumbs);
-  }, [getCurrentCategoryPath, catalogStructure]);
+  }, [getCurrentCategoryPath, catalogStructure, fetchItems]);
 
   // Обновляем хлебные крошки при изменении URL
   useEffect(() => {
     updateBreadcrumbs();
-    
+
     // Обработчик для нашего кастомного события
     const handleUrlChanged = () => {
       updateBreadcrumbs();
     };
-    
+
     // Обработчик для popstate (навигация назад/вперед)
     const handlePopState = () => {
       updateBreadcrumbs();
     };
-    
+
     // Добавляем слушатель события click для обновления хлебных крошек при клике на ссылки
     const handleDocumentClick = () => {
       // Используем setTimeout, чтобы дать время для обновления URL
@@ -105,15 +111,18 @@ const Breadcrumbs = () => {
         updateBreadcrumbs();
       }, 0);
     };
-    
-    window.addEventListener('urlChanged', handleUrlChanged as EventListener);
-    window.addEventListener('popstate', handlePopState);
-    document.addEventListener('click', handleDocumentClick);
-    
+
+    window.addEventListener("urlChanged", handleUrlChanged as EventListener);
+    window.addEventListener("popstate", handlePopState);
+    document.addEventListener("click", handleDocumentClick);
+
     return () => {
-      window.removeEventListener('urlChanged', handleUrlChanged as EventListener);
-      window.removeEventListener('popstate', handlePopState);
-      document.removeEventListener('click', handleDocumentClick);
+      window.removeEventListener(
+        "urlChanged",
+        handleUrlChanged as EventListener
+      );
+      window.removeEventListener("popstate", handlePopState);
+      document.removeEventListener("click", handleDocumentClick);
     };
   }, [updateBreadcrumbs]);
 

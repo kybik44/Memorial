@@ -1,24 +1,13 @@
 import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
   Grid,
   Theme,
   useMediaQuery,
   Box,
 } from "@mui/material";
-import Image from "mui-image";
-import { FC, memo } from "react";
-import Text from "../../atoms/text/Text";
+import { FC } from "react";
 import styles from "./styles";
 import FenceCard from "./FenceCard";
 import MySwiper from "/components/molecules/swiper/MySwiper";
-
-interface CardListItem {
-  title: string;
-  image: string;
-}
 
 interface IFence {
   id: number;
@@ -44,6 +33,7 @@ const FencesList: FC<FencesListProps> = ({ items }) => {
           slidesToShowMob={1}
           spaceBetween={20}
           iconFill="#313131"
+          sx={styles.carousel}
           breakpoints={{
             600: { slidesPerView: 1 },
           }}

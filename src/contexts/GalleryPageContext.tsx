@@ -1,9 +1,9 @@
 import React, {
   createContext,
-  useContext,
-  useState,
-  useEffect,
   ReactNode,
+  useContext,
+  useEffect,
+  useState,
 } from "react";
 import { getOurWorksList } from "/api/api";
 import { OurWorks, OurWorksResponse } from "/api/types";
@@ -31,10 +31,10 @@ export const GalleryPageProvider: React.FC<{
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const fetchOurWorks = async (page: number) => {
+  const fetchOurWorks = async () => {
     try {
       setLoading(true);
-      const response = await getOurWorksList({ page }) as OurWorksResponse;
+      const response = (await getOurWorksList()) as unknown as OurWorksResponse;
 
       if (response) {
         setOurWorks(response.results);
@@ -49,8 +49,8 @@ export const GalleryPageProvider: React.FC<{
   };
 
   useEffect(() => {
-    fetchOurWorks(currentPage);
-  }, [currentPage]);
+    fetchOurWorks();
+  }, []);
 
   return (
     <GalleryPageContext.Provider

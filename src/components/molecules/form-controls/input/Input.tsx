@@ -1,5 +1,5 @@
-import { FormControl, OutlinedInput, FormHelperText } from "@mui/material";
-import { SxProps, Theme } from "@mui/material/styles";
+import { FormControl, FormHelperText, OutlinedInput, Theme } from "@mui/material";
+import { SxProps } from "@mui/system";
 import { FC } from "react";
 import { useFormContext } from "react-hook-form";
 import styles from "./styles";
@@ -15,12 +15,15 @@ export interface IMuiInputProps {
   [otherProps: string]: any;
 }
 
+/**
+ * Компонент ввода текста
+ */
 const MuiInput: FC<IMuiInputProps> = ({
   defaultValue = "",
   name,
   label,
   placeholder,
-  sx,
+  sx = {},
   disabled = false,
   ...otherProps
 }) => {
@@ -32,7 +35,7 @@ const MuiInput: FC<IMuiInputProps> = ({
   const error = errors[name];
 
   return (
-    <FormControl sx={{ ...styles.formControl, ...sx }} error={!!error}>
+    <FormControl sx={styles.formControl} error={!!error}>
       {label && (
         <Text variant="h6" sx={styles.label}>
           {label}

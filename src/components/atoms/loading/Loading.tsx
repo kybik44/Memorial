@@ -1,5 +1,4 @@
 // components/atoms/loading/Loading.tsx
-import React from "react";
 import { Box, CircularProgress } from "@mui/material";
 
 const Loading = () => {

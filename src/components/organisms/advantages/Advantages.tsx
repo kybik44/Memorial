@@ -3,10 +3,9 @@ import { ReactNode, memo } from "react";
 import styles from "./styles";
 import arrowLeftGreen from "/assets/img/arrowLeftGreen.png";
 import arrowRightGreen from "/assets/img/arrowRightGreen.png";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 import Text from "/components/atoms/text/Text";
 import { getAdvantagesInfo } from "/utils/mock";
-import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
-import AnimatedList from "/components/animations/AnimatedList";
 
 export interface IAdvantagesList {
   title: string;
@@ -25,18 +24,13 @@ const AdvantagesList = memo(
     const advantagesInfo = getAdvantagesInfo(isSmallScreen, iconProperties);
 
     return (
-      <AnimatedList 
-        staggerDelay={0.1} 
-        initialDelay={0.2} 
-        direction="right"
-        sx={styles.advantages}
-      >
+      <Grid container sx={styles.advantages}>
         {advantagesInfo.map(({ title, subtitle, icon }, index) => (
           <Grid item key={index} sx={styles.item} xs={12} sm={12} md={6} xl={5}>
             {icon}
             <Box sx={styles.textBlock}>
-              <Text 
-                variant="h3" 
+              <Text
+                variant="h3"
                 sx={styles.itemTitle}
                 animated
                 animationType="fadeIn"
@@ -44,7 +38,7 @@ const AdvantagesList = memo(
               >
                 {title}
               </Text>
-              <Text 
+              <Text
                 variant="h6"
                 animated
                 animationType="fadeIn"
@@ -55,7 +49,7 @@ const AdvantagesList = memo(
             </Box>
           </Grid>
         ))}
-      </AnimatedList>
+      </Grid>
     );
   }
 );
@@ -83,8 +77,8 @@ const Advantages = () => {
                 src={arrowLeftGreen}
               />
             </Box>
-            <Text 
-              variant={isSmallScreen ? "h2" : "h1"} 
+            <Text
+              variant={isSmallScreen ? "h2" : "h1"}
               sx={styles.title}
               animated
               animationType="highlight"

@@ -2,9 +2,9 @@ import Box from "@mui/material/Box";
 import MuiTypography, { TypographyProps } from "@mui/material/Typography";
 import { SxProps, Theme } from "@mui/material/styles";
 import { SystemStyleObject } from "@mui/system";
-import { ElementType, FC, ReactNode, useMemo } from "react";
-import { getFontSizes } from "/utils/responsible";
 import { motion } from "framer-motion";
+import { ElementType, FC, useMemo } from "react";
+import { getFontSizes } from "/utils/responsible";
 
 export type TextVariants =
   | "h1"

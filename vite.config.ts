@@ -16,6 +16,7 @@ export default ({ mode }) => {
         '/hooks': resolve(__dirname, 'src', 'hooks'),
         '/api': resolve(__dirname, 'src', 'api'),
         '/contexts': resolve(__dirname, 'src', 'contexts'),
+        '/services': resolve(__dirname, 'src', 'services'),
         react: resolve(__dirname, 'node_modules/react')
       }
     },

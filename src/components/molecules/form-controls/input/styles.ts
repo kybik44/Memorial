@@ -6,7 +6,7 @@ const styles: Record<string, SxProps<Theme>> = {
     width: 1,
   },
   label: {
-    mb: 2,
+    mb: 1,
     fontWeight: 700,
     [theme.breakpoints.down("sm")]: {
       mb: 1,

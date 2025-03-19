@@ -53,9 +53,7 @@ const GraniteList: FC<GraniteListProps> = memo(({ materials, expanded }) => {
         {materials.map((material) => (
           <GraniteListItem
             key={material.id}
-            title={material.title}
-            image={material.image || ""}
-            description={material.description || ""}
+            {...material}
           />
         ))}
       </Grid>

@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import {
   Application,
   Catalog,
@@ -15,6 +15,7 @@ import {
 
 export const api = axios.create({
   baseURL: "https://laststone.by/",
+  // baseURL: "http://localhost:8030/",
   withCredentials: false,
   // headers: {
   //   'X-CSRFToken': "#6g#m#x)p7315jc#)5ytb)8d74q0!5_h@oyf=h!8$k=+!-jd=i",
@@ -25,7 +26,9 @@ const handleApiError = (error: AxiosError): string => {
   if (axios.isAxiosError(error)) {
     // Handle Axios errors
     console.error("API Error:", error.response?.data);
-    return error.response?.data?.message || "API Error";
+    return error.response?.data && typeof error.response.data === 'object' && 'message' in error.response.data 
+      ? error.response.data.message as string 
+      : "API Error";
   } else {
     // Handle non-Axios errors
     console.error("Unexpected Error:", error);
@@ -48,10 +51,12 @@ const setCachedData = (key: string, data: any) => {
   cache.set(key, { data, timestamp: Date.now() });
 };
 
-export const apiRequest = async <T>(config: AxiosRequestConfig): Promise<T | undefined> => {
+export const apiRequest = async <T>(
+  config: AxiosRequestConfig
+): Promise<T | undefined> => {
   const cacheKey = `${config.method}-${config.url}-${JSON.stringify(config.params)}`;
   const cachedData = getCachedData(cacheKey);
-  
+
   if (cachedData) {
     return cachedData;
   }

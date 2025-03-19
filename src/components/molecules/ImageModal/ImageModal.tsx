@@ -1,66 +1,54 @@
-import {
-  Box,
-  CircularProgress,
-  Fade,
-  Modal,
-  Theme,
-  useMediaQuery,
-  IconButton,
-} from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import CloseIcon from "@mui/icons-material/Close";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Keyboard } from "swiper/modules";
-import { useSwiper } from 'swiper/react';
+import { Box, CircularProgress, IconButton, Modal } from "@mui/material";
+import { FC, useEffect, useRef, useState } from "react";
 import "swiper/css";
 import "swiper/css/navigation";
-import styles from "./styles";
+import { Keyboard, Navigation } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { styles } from "./styles";
+import LazyImage from "/components/atoms/lazy-image/LazyImage";
 
-// Компонент для кастомных кнопок навигации
-const NavigationButtons = () => {
-  const swiper = useSwiper();
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
-  );
+// Конфигурация качества изображений для различных режимов просмотра
+const IMAGE_QUALITY_CONFIG = {
+  modal: {
+    desktop: 1600, // Полное качество для десктопа
+    tablet: 1200, // Среднее качество для планшетов
+    mobile: 800, // Низкое качество для мобильных
+  },
+};
 
-  if (isSmallScreen) return null;
+interface NavigationButtonsProps {
+  onPrev: () => void;
+  onNext: () => void;
+  disablePrev?: boolean;
+  disableNext?: boolean;
+}
 
+const NavigationButtons: FC<NavigationButtonsProps> = ({
+  onPrev,
+  onNext,
+  disablePrev,
+  disableNext,
+}) => {
   return (
     <>
       <IconButton
-        onClick={() => swiper.slidePrev()}
-        sx={{
-          position: 'absolute',
-          left: { xs: 8, sm: 16, md: 24 },
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2,
-          color: 'white',
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          },
-        }}
+        onClick={onPrev}
+        sx={styles.prevButton}
+        disabled={disablePrev}
+        aria-label="Предыдущее изображение"
       >
-        <ArrowBackIosNewIcon />
+        <ArrowBackIosNewIcon sx={styles.navigationIcon} />
       </IconButton>
       <IconButton
-        onClick={() => swiper.slideNext()}
-        sx={{
-          position: 'absolute',
-          right: { xs: 8, sm: 16, md: 24 },
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2,
-          color: 'white',
-          backgroundColor: 'rgba(0, 0, 0, 0.4)',
-          '&:hover': {
-            backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          },
-        }}
+        onClick={onNext}
+        sx={styles.nextButton}
+        disabled={disableNext}
+        aria-label="Следующее изображение"
       >
-        <ArrowForwardIosIcon />
+        <ArrowForwardIosIcon sx={styles.navigationIcon} />
       </IconButton>
     </>
   );
@@ -76,7 +64,7 @@ interface ImageModalProps {
   handleClose: () => void;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({
+const ImageModal: FC<ImageModalProps> = ({
   open,
   currentImageIndex,
   loading,
@@ -85,99 +73,155 @@ const ImageModal: React.FC<ImageModalProps> = ({
   handleNext,
   handleClose,
 }) => {
-  const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down("sm")
-  );
+  const [swiper, setSwiper] = useState<any>(null);
+  const [isImageLoading, setIsImageLoading] = useState<boolean>(true);
+  const [viewportWidth, setViewportWidth] = useState<number>(window.innerWidth);
+  const swiperInitialized = useRef(false);
+
+  // Определить оптимальный размер изображения на основе viewport
+  const getOptimalImageWidth = () => {
+    if (viewportWidth > 1280) return IMAGE_QUALITY_CONFIG.modal.desktop;
+    if (viewportWidth > 768) return IMAGE_QUALITY_CONFIG.modal.tablet;
+    return IMAGE_QUALITY_CONFIG.modal.mobile;
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  // Безопасно обновляем текущий слайд в Swiper
+  useEffect(() => {
+    // Проверяем, что swiper существует и инициализирован
+    if (
+      swiper &&
+      swiper.initialized &&
+      open &&
+      currentImageIndex !== undefined
+    ) {
+      // Безопасно вызываем slideTo с таймаутом для обеспечения инициализации Swiper
+      const timer = setTimeout(() => {
+        if (swiper && swiper.initialized) {
+          try {
+            swiper.slideTo(currentImageIndex, 0);
+            swiperInitialized.current = true;
+          } catch (error) {
+            console.error("Swiper slideTo error:", error);
+          }
+        }
+      }, 50);
+
+      return () => clearTimeout(timer);
+    }
+  }, [swiper, currentImageIndex, open]);
+
+  // Сбрасываем состояние загрузки при смене изображения
+  useEffect(() => {
+    setIsImageLoading(true);
+  }, [currentImageIndex]);
+
+  const handleImageLoad = () => {
+    setIsImageLoading(false);
+  };
+
+  // Обработчик инициализации Swiper
+  const handleSwiperInit = (swiperInstance: any) => {
+    setSwiper(swiperInstance);
+    // Устанавливаем начальный слайд после инициализации
+    if (swiperInstance && currentImageIndex !== undefined) {
+      try {
+        swiperInstance.slideTo(currentImageIndex, 0);
+        swiperInitialized.current = true;
+      } catch (error) {
+        console.error("Initial slideTo error:", error);
+      }
+    }
+  };
 
   return (
-    <Modal open={open} onClose={handleClose}>
+    <Modal open={open} onClose={handleClose} sx={styles.modal}>
       <Box sx={styles.modalBox}>
-        <Fade in={open} timeout={200}>
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              position: "relative",
-              width: "100%",
-              height: "100%",
-            }}
-          >
+        <IconButton
+          onClick={handleClose}
+          aria-label="Закрыть"
+          sx={styles.closeButton}
+        >
+          <CloseIcon />
+        </IconButton>
+
+        {images.length > 0 && (
+          <>
+            <NavigationButtons
+              onPrev={handlePrev}
+              onNext={handleNext}
+              disablePrev={currentImageIndex === 0}
+              disableNext={currentImageIndex === images.length - 1}
+            />
+
             <Swiper
-              modules={[Navigation, Keyboard]}
-              navigation={false} // Отключаем встроенную навигацию
-              keyboard={{
-                enabled: true,
-              }}
+              onSwiper={handleSwiperInit}
+              slidesPerView={1}
               initialSlide={currentImageIndex}
-              onSlideChange={(swiper) => {
-                const newIndex = swiper.activeIndex;
-                if (newIndex > currentImageIndex) {
-                  handleNext();
-                } else {
-                  handlePrev();
+              onSlideChange={(swiperInstance) => {
+                if (
+                  swiperInstance &&
+                  currentImageIndex !== swiperInstance.activeIndex
+                ) {
+                  if (swiperInstance.activeIndex > currentImageIndex) {
+                    handleNext();
+                  } else {
+                    handlePrev();
+                  }
                 }
               }}
-              style={{
-                width: "100%",
-                height: "100%",
-              }}
+              modules={[Navigation, Keyboard]}
+              keyboard={{ enabled: true }}
+              style={{ width: "100%", height: "100%" }}
             >
               {images.map((image, index) => (
-                <SwiperSlide key={index}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                  >
-                    {loading && (
-                      <CircularProgress
-                        style={{ color: "white" }}
-                        sx={{
-                          position: "absolute",
-                          top: "50%",
-                          left: "50%",
-                          transform: "translate(-50%, -50%)",
-                        }}
-                      />
+                <SwiperSlide
+                  key={index}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <Box sx={styles.imageContainer}>
+                    {(loading || isImageLoading) && (
+                      <Box sx={styles.loader}>
+                        <CircularProgress />
+                      </Box>
                     )}
-                    <img
+
+                    <LazyImage
                       src={image}
-                      alt={`Gallery Item ${index + 1}`}
+                      alt={`Изображение ${index + 1}`}
+                      width={getOptimalImageWidth()}
+                      quality="high"
+                      priority={index === currentImageIndex}
+                      preload={index === currentImageIndex}
+                      onLoad={handleImageLoad}
                       style={{
-                        width: "auto",
-                        maxWidth: isSmallScreen ? "100%" : "80%",
-                        maxHeight: "90vh",
+                        maxWidth: "100%",
+                        maxHeight: "100%",
                         objectFit: "contain",
-                        display: loading ? "none" : "block",
+                        opacity: loading || isImageLoading ? 0 : 1,
+                        transition: "opacity 0.5s ease-in-out",
                       }}
                     />
                   </Box>
                 </SwiperSlide>
               ))}
-              <NavigationButtons />
             </Swiper>
-            <CloseIcon 
-              sx={{
-                position: 'absolute',
-                top: { xs: 8, sm: 16, md: 24 },
-                right: { xs: 8, sm: 16, md: 24 },
-                color: 'white',
-                cursor: 'pointer',
-                zIndex: 2,
-                fontSize: { xs: 24, sm: 32 },
-                '&:hover': {
-                  opacity: 0.8,
-                },
-              }} 
-              onClick={handleClose} 
-            />
-          </Box>
-        </Fade>
+          </>
+        )}
       </Box>
     </Modal>
   );

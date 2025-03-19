@@ -6,6 +6,7 @@ interface OptimizedImageProps {
   alt: string;
   width?: number;
   height?: number;
+  duration?: number;
   [key: string]: any;
 }
 
@@ -21,7 +22,6 @@ const OptimizedImage: FC<OptimizedImageProps> = memo(({ src, alt, width, height,
         alt={alt}
         width={width}
         height={height}
-        loading="lazy"
         duration={0}
         {...props}
       />

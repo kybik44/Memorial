@@ -13,7 +13,6 @@ import {
 } from "@mui/material";
 import { SystemStyleObject } from "@mui/system/styleFunctionSx/styleFunctionSx";
 import { FC, useRef, useState, useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
 import headerStyles from "../header/styles";
 import { CatalogMenuItem } from "./CatalogMenu";
 import MenuLink from "./MenuLink";
@@ -26,7 +25,6 @@ const MobileCatalogMenu: FC<MobileCatalogMenuProps> = ({ links }) => {
   const [isOpen, setIsOpen] = useState(false);
   const theme = useTheme();
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const location = useLocation();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
 
   // Определяем текущую секцию на основе пути

@@ -3,7 +3,6 @@ import styles from "./styles";
 import womanImage from "/assets/img/woman.png";
 import Text from "/components/atoms/text/Text";
 import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
-import { motion } from "framer-motion";
 
 const Description = () => {
   return (

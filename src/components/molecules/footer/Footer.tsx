@@ -2,9 +2,9 @@ import { Grid, Link, Stack, Theme, useMediaQuery } from "@mui/material";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import styles from "./styles";
-import bigLogo from "/assets/img/bigLogo.png";
-import Text from "/components/atoms/text/Text";
-import { footerInfos, footerPages, footerTime } from "/utils/mock";
+import bigLogo from "../../../assets/img/bigLogo.png";
+import Text from "../../../components/atoms/text/Text";
+import { footerInfos, footerPages, footerTime } from "../../../utils/mock";
 
 const Footer = () => {
   const isSmallScreen = useMediaQuery((theme: Theme) =>

@@ -14,8 +14,8 @@ import { SystemStyleObject } from "@mui/system/styleFunctionSx/styleFunctionSx";
 import { FC, KeyboardEvent, MouseEvent, useState } from "react";
 import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import styles from "./styles";
-import logo from "/assets/img/logo.png";
-import Text from "/components/atoms/text/Text";
+import logo from "../../../assets/img/logo.png";
+import Text from "../../../components/atoms/text/Text";
 
 const pages = [
   { name: "Виды гранита", href: "#granite" },

@@ -39,7 +39,7 @@ const initStyles = {
 };
 
 const GalleryContent = () => {
-  const { ourWorks, loading, error, currentPage, totalPages, setCurrentPage } =
+  const { loading, error, currentPage, totalPages, setCurrentPage } =
     useGalleryPageContext();
 
   const handlePageChange = (page: number) => {
@@ -76,15 +76,6 @@ const GalleryContent = () => {
 
   return (
     <>
-      <Box sx={initStyles.galleryHeader}>
-        <AnimatedText variant="h3" animationType="highlight" mb={1}>
-          Наши работы
-        </AnimatedText>
-        <AnimatedText variant="body1" animationType="fadeIn" delay={0.3}>
-          Примеры наших лучших проектов и реализаций
-        </AnimatedText>
-      </Box>
-
       <FadeInWhenVisible>
         <Gallery />
       </FadeInWhenVisible>

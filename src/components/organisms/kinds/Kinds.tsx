@@ -1,10 +1,9 @@
 import { Box, Container, useMediaQuery, useTheme } from "@mui/material";
 import KindsList from "./KindsList";
 import styles from "./styles";
+import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 import Text from "/components/atoms/text/Text";
 import { useMainPageContext } from "/contexts/MainPageContext";
-import Loading from "/components/atoms/loading/Loading";
-import FadeInWhenVisible from "/components/animations/FadeInWhenVisible";
 
 const Kinds = () => {
   const theme = useTheme();

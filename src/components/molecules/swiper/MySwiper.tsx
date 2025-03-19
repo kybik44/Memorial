@@ -1,17 +1,19 @@
+import { Box, Theme } from "@mui/material";
+import { SxProps } from "@mui/system";
 import React, {
   ReactNode,
+  TouchEvent,
+  useEffect,
   useRef,
   useState,
-  useEffect,
-  TouchEvent,
+  useCallback,
 } from "react";
-import { Box, SxProps, Theme } from "@mui/material";
-import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIosOutlined";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import styles from "./styles";
+import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
 interface Breakpoints {
-  [width: number]: {
+  [key: string]: {
     slidesPerView: number;
   };
 }
@@ -21,7 +23,6 @@ interface CarouselProps {
   slidesToShowMob: number;
   children: ReactNode;
   spaceBetween?: number;
-  loop?: boolean;
   onSlideChange?: (index: number) => void;
   iconFill?: string;
   sx?: SxProps<Theme>;
@@ -38,7 +39,6 @@ const MySwiper: React.FC<CarouselProps> = ({
   iconFill = "#000",
   breakpoints,
   onSlideChange,
-  loop = false,
   showButtons = true,
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,7 +49,6 @@ const MySwiper: React.FC<CarouselProps> = ({
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const minSwipeDistance = 50;
-
   const totalSlides = React.Children.count(children);
 
   useEffect(() => {
@@ -58,7 +57,7 @@ const MySwiper: React.FC<CarouselProps> = ({
     }
   }, [totalSlides, currentIndex]);
 
-  const updateSlidesPerView = () => {
+  const updateSlidesPerView = useCallback(() => {
     if (breakpoints) {
       const viewportWidth = window.innerWidth;
       const breakpoint = Object.keys(breakpoints)
@@ -66,20 +65,25 @@ const MySwiper: React.FC<CarouselProps> = ({
         .find((width) => viewportWidth >= parseInt(width));
 
       if (breakpoint) {
-        setSlidesPerView(breakpoints[breakpoint].slidesPerView);
+        setSlidesPerView(breakpoints[breakpoint as keyof typeof breakpoints].slidesPerView);
       } else {
         setSlidesPerView(slidesToShowMob);
       }
     }
-  };
+  }, [breakpoints, slidesToShowMob]);
 
+  // Initialize slidesPerView based on breakpoints
   useEffect(() => {
     updateSlidesPerView();
+  }, [updateSlidesPerView]);
+
+  // Add resize listener
+  useEffect(() => {
     window.addEventListener("resize", updateSlidesPerView);
     return () => {
       window.removeEventListener("resize", updateSlidesPerView);
     };
-  }, []);
+  }, [updateSlidesPerView]);
 
   const handlePrev = () => {
     setCurrentIndex((prevIndex) => {
@@ -121,20 +125,27 @@ const MySwiper: React.FC<CarouselProps> = ({
     }
   };
 
+  // Create a custom style object that merges the base styles with any provided sx prop
+  const containerStyle = {
+    ...styles.container,
+    ...(sx || {}),
+  };
+
   return (
-    <Box sx={{ ...styles.container, ...sx }} ref={containerRef}>
-      <Box
-        sx={styles.carouselContainer}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <Box
+    <div style={{ position: 'relative', width: '100%', height: '100%' }} ref={containerRef}>
+      <Box sx={containerStyle}>
+        <div
           ref={slideContainerRef}
-          sx={{
-            ...styles.slideContainer,
-            transform: `translateX(-${(currentIndex * 100) / slidesPerView}%)`,
+          style={{
+            display: "flex",
+            transition: "transform 0.3s ease",
+            transform: `translateX(-${currentIndex * (100 / slidesPerView)}%)`,
+            width: "100%",
+            height: "100%",
           }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           {React.Children.map(children, (child) => (
             <Box
@@ -147,34 +158,34 @@ const MySwiper: React.FC<CarouselProps> = ({
               {child}
             </Box>
           ))}
-        </Box>
+        </div>
+        {showButtons && (
+          <>
+            <Box
+              sx={{
+                ...styles.sliderArrow,
+                visibility: currentIndex === 0 ? "hidden" : "visible",
+              }}
+              onClick={handlePrev}
+            >
+              <ArrowBackIosIcon style={{ fill: iconFill }} />
+            </Box>
+            <Box
+              sx={{
+                ...styles.sliderArrow,
+                visibility:
+                  currentIndex >= totalSlides - slidesPerView
+                    ? "hidden"
+                    : "visible",
+              }}
+              onClick={handleNext}
+            >
+              <ArrowForwardIosIcon style={{ fill: iconFill }} />
+            </Box>
+          </>
+        )}
       </Box>
-      {showButtons && (
-        <>
-          <Box
-            sx={{
-              ...styles.sliderArrow,
-              visibility: currentIndex === 0 ? "hidden" : "visible",
-            }}
-            onClick={handlePrev}
-          >
-            <ArrowBackIosIcon style={{ fill: iconFill }} />
-          </Box>
-          <Box
-            sx={{
-              ...styles.sliderArrow,
-              visibility:
-                currentIndex >= totalSlides - slidesPerView
-                  ? "hidden"
-                  : "visible",
-            }}
-            onClick={handleNext}
-          >
-            <ArrowForwardIosIcon style={{ fill: iconFill }} />
-          </Box>
-        </>
-      )}
-    </Box>
+    </div>
   );
 };
 
